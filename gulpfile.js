@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     browserSync = require('browser-sync'),
     concat = require('gulp-concat');
     uglify = require('gulp-uglify');
+    autoprefixer = require('gulp-autoprefixer');
 
 var cssSources,
     jsSources;
@@ -19,6 +20,10 @@ gulp.task('sass', function(){
   return gulp.src(cssSources)
     .pipe(sass({
       outputStyle: 'compressed'
+    }))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
     }))
     .pipe(gulp.dest('css'))
     .pipe(browserSync.reload({
