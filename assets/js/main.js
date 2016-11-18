@@ -1,6 +1,6 @@
 var unit = document.querySelector('input[name="unit"]:checked').value;
 var unitIcon = "°C";
-if (unit = "imperial") {
+if (unit == "imperial") {
   unitIcon = "°F";
 }
 console.log("Units: " + unit + unitIcon);
@@ -19,7 +19,7 @@ function getCity(){
   var output;
 
   // check for connection
-  if (xhr.response = 200) {
+  if (xhr.response == 200) {
 
     var data = JSON.parse(xhr.responseText);
     //console.log(data);
