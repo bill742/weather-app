@@ -1,11 +1,23 @@
-var unit = document.querySelector('input[name="unit"]:checked').value;
-var unitIcon = "°C";
-if (unit == "imperial") {
-  unitIcon = "°F";
+var unit;
+var unitIcon;
+
+// unit = document.querySelector('input[name="unit"]:checked').value;
+
+// Get radio button values for query
+function tempUnit() {
+  if (document.getElementById("unit2").checked == true) {
+      unitIcon = "°F";
+      unit = "imperial";
+  } else {
+      unitIcon = "°C";
+      unit = "metric";
+  }
+  // console.log("Units: " + unit + unitIcon);
 }
-console.log("Units: " + unit + unitIcon);
 
 function getCity(){
+  tempUnit();
+
   var city = document.getElementById('cityBox').value;
 
   // Ajax request data
@@ -14,15 +26,15 @@ function getCity(){
   xhr.open('GET', wapi, false);
   xhr.send(null);
 
-  console.log(wapi);
+  // console.log(wapi);
 
   var output;
 
   // check for connection
-  if (xhr.response == 200) {
+  if (xhr.readyState === 4) {
 
     var data = JSON.parse(xhr.responseText);
-    //console.log(data);
+    // console.log(data);
 
     var temp = data.list[0].main.temp;
     var splitTemp = JSON.stringify(temp).split('.', 1);
@@ -36,5 +48,7 @@ function getCity(){
   } else {
     output = "Error - no response";
   }
+
+  document.getElementById('dataBox').innerHTML = output;
 
 }

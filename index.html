@@ -15,10 +15,10 @@
     <div class="content">
       <input type="text" name="cityBox" id="cityBox" value="Toronto">
       <input type="button" name="submit" value="Search" onclick="getCity(cityBox);">
-      <input type="radio" name="unit" value="metric" id="unit1" checked=""><label for="unit1">Celcius</label>
-      <input type="radio" name="unit" value="imperial" id="unit2"><label for="unit2">Imperial</label>
+      <input type="radio" name="unit" value="metric" id="unit1" onclick="tempUnit();" checked=""><label for="unit1">Celcius</label>
+      <input type="radio" name="unit" value="imperial" id="unit2" onclick="tempUnit();"><label for="unit2">Imperial</label>
 
-      <div class="date" id="dataBox">
+      <div class="data" id="dataBox">
 
       </div>
     </div>
