@@ -1,24 +1,25 @@
-var unit;
-var unitIcon;
-
-// unit = document.querySelector('input[name="unit"]:checked').value;
+var unit = "imperial";
+var unitIcon = "°F";
 
 // Get radio button values for query
-function tempUnit() {
-  if (document.getElementById("unit2").checked == true) {
-      unitIcon = "°F";
-      unit = "imperial";
-  } else {
+function changeUnit() {
+  var elem = document.getElementById("unitBtn");
+
+  if (elem.value == 'Show me Celcius') {
       unitIcon = "°C";
       unit = "metric";
+      elem.value = 'Show me Fahrenheit';
+  } else {
+      unitIcon = "°F";
+      unit = "imperial";
+      elem.value = 'Show me Celcius';
   }
-  // console.log("Units: " + unit + unitIcon);
 }
 
 function getCity(){
-  tempUnit();
+  // changeUnit();
 
-  var city = document.getElementById('cityBox').value;
+  var city = document.getElementById('search').value;
 
   // Ajax request data
   var wapi = "http://api.openweathermap.org/data/2.5/forecast/weather?q=" + city + "&units=" + unit + "&id=524901&APPID=b32c84201db94b92ed42d393cac6526b";

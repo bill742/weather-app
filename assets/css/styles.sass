@@ -1,3 +1,15 @@
+// Variables
+$blue: #6495ed
+
+// Mixin
+@mixin btn
+    color: #fff
+    padding: 10px 15px
+    background-color: $blue
+    border-radius: 10px
+    border: 2px solid #fff
+    cursor: pointer
+
 body
   font-family: 'Lato', sans-serif
   font-size: 16px
@@ -7,4 +19,22 @@ body
   text-align: center
 
 h1
-  color: #6495ed
+  color: $blue
+
+// Search
+.search
+    font-size: 16px
+    padding: 7px 4px
+    border: #ccc 1px solid
+
+.searchBtn
+    @include btn
+
+.unit-btn
+    @include btn
+    margin: 20px auto
+    display: block
+    width: 160px
+
+    &:hover
+        border: 2px solid #000
