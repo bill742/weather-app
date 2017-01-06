@@ -5,20 +5,20 @@ function displayLocation(latitude,longitude){
   var request = new XMLHttpRequest();
 
   var method = 'GET';
-  var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latitude+','+longitude+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
+  // var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latitude+','+longitude+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
   var async = true;
 
-  request.open(method, url, async);
+  // request.open(method, url, async);
   request.onreadystatechange = function(){
     if(request.readyState == 4 && request.status == 200){
       var data = JSON.parse(request.responseText);
       var address = data.results[0];
       // document.write(address.formatted_address);
     } else {
-      console.log("no data");
+      console.log("no data!");
     }
   };
-  request.send();
+  // request.send();
 }
 
 var successCallback = function(position){
@@ -26,6 +26,8 @@ var successCallback = function(position){
     var y = position.coords.longitude;
     // displayLocation(x,y);
     console.log(x, y);
+    var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
+    console.log(url);
 };
 
 var errorCallback = function(error){
@@ -120,5 +122,7 @@ function getCity(){
 
       document.getElementById('dataBox').innerHTML = output;
   }
+
+  // document.getElementById("search").addEventListener("keyup", getCity());
 
 }
