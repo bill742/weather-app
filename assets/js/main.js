@@ -1,66 +1,67 @@
 var unit = "imperial";
 var unitIcon = "°F";
 
+function displayLocation(latitude,longitude){
+  var request = new XMLHttpRequest();
+
+  var method = 'GET';
+  var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latitude+','+longitude+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
+  var async = true;
+
+  request.open(method, url, async);
+  request.onreadystatechange = function(){
+    if(request.readyState == 4 && request.status == 200){
+      var data = JSON.parse(request.responseText);
+      var address = data.results[0];
+      // document.write(address.formatted_address);
+    } else {
+      console.log("no data");
+    }
+  };
+  request.send();
+}
+
+var successCallback = function(position){
+    var x = position.coords.latitude;
+    var y = position.coords.longitude;
+    // displayLocation(x,y);
+    console.log(x, y);
+};
+
+var errorCallback = function(error){
+var errorMessage = 'Unknown error';
+switch(error.code) {
+  case 1:
+    errorMessage = 'Permission denied';
+    break;
+  case 2:
+    errorMessage = 'Position unavailable';
+    break;
+  case 3:
+    errorMessage = 'Timeout';
+    break;
+    }
+    // document.write(errorMessage);
+};
+
+var options = {
+  enableHighAccuracy: true,
+  timeout: 1000,
+  maximumAge: 0
+};
+
+  navigator.geolocation.getCurrentPosition(successCallback,errorCallback,options);
+  // navigator.geolocation.getCurrentPosition(successCallback);
+
+// navigator.geolocation.getCurrentPosition(function(position) {
+//       var x = position.coords.latitude;
+//       var y = position.coords.longitude;
+//       console.log(x, y);
+//   });
+
 // Preload with geoloaction if possible
 if ("geolocation" in navigator) {
-
-    function displayLocation(latitude,longitude){
-          var request = new XMLHttpRequest();
-
-          var method = 'GET';
-          var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latitude+','+longitude+'&sensor=true';
-          var async = true;
-
-          request.open(method, url, async);
-          request.onreadystatechange = function(){
-            if(request.readyState == 4 && request.status == 200){
-              var data = JSON.parse(request.responseText);
-              var address = data.results[0];
-              document.write(address.formatted_address);
-            }
-          };
-          request.send();
-        };
-
-        var successCallback = function(position){
-            var x = position.coords.latitude;
-            var y = position.coords.longitude;
-            // displayLocation(x,y);
-            console.log(x, y);
-        };
-
-        var errorCallback = function(error){
-        var errorMessage = 'Unknown error';
-        switch(error.code) {
-          case 1:
-            errorMessage = 'Permission denied';
-            break;
-          case 2:
-            errorMessage = 'Position unavailable';
-            break;
-          case 3:
-            errorMessage = 'Timeout';
-            break;
-            }
-            // document.write(errorMessage);
-        };
-
-      var options = {
-        enableHighAccuracy: true,
-        timeout: 1000,
-        maximumAge: 0
-      };
-
-        navigator.geolocation.getCurrentPosition(successCallback,errorCallback,options);
-        // navigator.geolocation.getCurrentPosition(successCallback);
-
-  // navigator.geolocation.getCurrentPosition(function(position) {
-  //       var x = position.coords.latitude;
-  //       var y = position.coords.longitude;
-  //       console.log(x, y);
-  //       // AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68
-  //   });
-
+  displayLocation();
 } else {
   console.log("geolocation IS NOT available");
 }
@@ -84,7 +85,7 @@ function getCity(){
   // changeUnit();
 
   var city = document.getElementById('search').value;
-  if (city == " "){
+  if (city === ""){
       document.getElementById('dataBox').innerHTML = "Please search for a city!";
   } else {
       // Ajax request data
@@ -112,6 +113,7 @@ function getCity(){
         output += '<p>Current Temperature: ' + splitTemp + unitIcon + '</p>';
 
         document.getElementById('dataBox').innerHTML = output;
+
       } else {
         output = "Error - no response";
       }
