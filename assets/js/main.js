@@ -1,74 +1,21 @@
 var unit = "imperial";
 var unitIcon = "°F";
 
-function displayLocation(latitude,longitude){
-  var request = new XMLHttpRequest();
-
-  var method = 'GET';
-  // var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+latitude+','+longitude+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
-  var async = true;
-
-  // request.open(method, url, async);
-  request.onreadystatechange = function(){
-    if(request.readyState == 4 && request.status == 200){
-      var data = JSON.parse(request.responseText);
-      var address = data.results[0];
-      // document.write(address.formatted_address);
-    } else {
-      console.log("no data!");
-    }
-  };
-  // request.send();
-}
-
-var successCallback = function(position){
+// Preload with geoloaction if possible
+if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(function(position) {
     var x = position.coords.latitude;
     var y = position.coords.longitude;
     // displayLocation(x,y);
     console.log(x, y);
     var url = 'http://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
     console.log(url);
-};
-
-var errorCallback = function(error){
-var errorMessage = 'Unknown error';
-switch(error.code) {
-  case 1:
-    errorMessage = 'Permission denied';
-    break;
-  case 2:
-    errorMessage = 'Position unavailable';
-    break;
-  case 3:
-    errorMessage = 'Timeout';
-    break;
-    }
-    // document.write(errorMessage);
-};
-
-var options = {
-  enableHighAccuracy: true,
-  timeout: 1000,
-  maximumAge: 0
-};
-
-  navigator.geolocation.getCurrentPosition(successCallback,errorCallback,options);
-  // navigator.geolocation.getCurrentPosition(successCallback);
-
-// navigator.geolocation.getCurrentPosition(function(position) {
-//       var x = position.coords.latitude;
-//       var y = position.coords.longitude;
-//       console.log(x, y);
-//   });
-
-// Preload with geoloaction if possible
-if ("geolocation" in navigator) {
-  displayLocation();
+  });
 } else {
   console.log("geolocation IS NOT available");
 }
 
-// Get radio button values for query
+// Swtich between celcius and Fahrenheit
 function changeUnit() {
   var elem = document.getElementById("unitBtn");
 
@@ -122,7 +69,10 @@ function getCity(){
 
       document.getElementById('dataBox').innerHTML = output;
   }
-
-  // document.getElementById("search").addEventListener("keyup", getCity());
-
 }
+
+document.getElementById("search").onkeypress = function(event){
+  if (event.keyCode == 13 || event.which == 13){
+      getCity();
+  }
+};
