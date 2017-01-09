@@ -4,6 +4,7 @@ var gulp = require('gulp'),
     concat = require('gulp-concat');
     uglify = require('gulp-uglify');
     autoprefixer = require('gulp-autoprefixer');
+    concatCss = require('gulp-concat-css');
 
 var cssSources,
     jsSources;
@@ -30,6 +31,12 @@ gulp.task('sass', function(){
       stream: true
     }));
 });
+
+// gulp.task('css', function(){
+//     return gulp.src('css/*.css')
+//     .pipe(concatCss("style.css"))
+//     .pipe(gulp.dest('/'));
+// });
 
 gulp.task('js', function() {
   gulp.src(jsSources)

@@ -8,15 +8,15 @@ if ("geolocation" in navigator) {
     var x = position.coords.latitude;
     var y = position.coords.longitude;
     // displayLocation(x,y);
-    console.log(x, y);
+    // console.log(x, y);
     var localUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
-    console.log(localUrl);
+    // console.log(localUrl);
 
     // Retreive JSON data from Google Maps URL
     loadJSON(localUrl,
          function(data) {
            city = data.results[5].address_components[0].long_name;
-           console.log(city);
+        //    console.log(city);
            getCityData(city);
         }
         //  ,function(xhr) { console.error(xhr);}
@@ -77,14 +77,15 @@ function getCityData() {
   if (xhr.readyState === 4) {
 
     var data = JSON.parse(xhr.responseText);
-    // console.log(data);
+    console.log(data);
 
     var temp = data.list[0].main.temp;
     var splitTemp = JSON.stringify(temp).split('.', 1);
 
-    output = '<p>City: ' + data.city.name + '</p>';
-    output += '<img src=http://openweathermap.org/img/w/' + data.list[0].weather[0].icon + '.png>';
-    output += data.list[0].weather[0].main;
+    output = '<p class="data-city">' + data.city.name + '</p>';
+    // output += '<img src=http://openweathermap.org/img/w/' + data.list[0].weather[0].icon + '.png  class="data-img">';
+    output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
+    output += '<p>' + data.list[0].weather[0].main + '</p>';
     output += '<p>Current Temperature: ' + splitTemp + unitIcon + '</p>';
 
     document.getElementById('dataBox').innerHTML = output;
