@@ -3,10 +3,7 @@ if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(function(position) {
     var x = position.coords.latitude;
     var y = position.coords.longitude;
-    // displayLocation(x,y);
-    // console.log(x, y);
     var localUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
-    // console.log(localUrl);
 
     // Retreive JSON data from Google Maps URL
     loadJSON(localUrl,

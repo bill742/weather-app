@@ -8,6 +8,13 @@ function getCityData() {
 
   // console.log(wapi);
 
+  // navigator.geolocation.getCurrentPosition(function(position) {
+  //   var x = position.coords.latitude;
+  //   var y = position.coords.longitude;
+  //   var photoUrl = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&location='+x+','+y+'&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68'
+  //   console.log(photoUrl);
+  // }
+
   var output;
 
   // check for connection
@@ -18,12 +25,17 @@ function getCityData() {
 
     var temp = data.list[0].main.temp;
     var splitTemp = JSON.stringify(temp).split('.', 1);
+    var dataCity = data.city.name;
 
-    output = '<p class="data-city">' + data.city.name + '</p>';
+    output = '<p class="data-city">' + dataCity + '</p>';
+
     // output += '<img src=http://openweathermap.org/img/w/' + data.list[0].weather[0].icon + '.png  class="data-img">';
     output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
     output += '<p>' + data.list[0].weather[0].main + '</p>';
     output += '<p id="unitText">Current Temperature: ' + splitTemp + unitIcon + '</p>';
+    // output += '<img src="' + photoUrl + '">'
+
+    GetSearchResults(dataCity);
 
     document.getElementById('dataBox').innerHTML = output;
 
