@@ -5,20 +5,27 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify');
     autoprefixer = require('gulp-autoprefixer');
     concatCss = require('gulp-concat-css');
+    cleanCSS = require('gulp-clean-css');
 
-var cssSources,
+var sassSources,
+    cssSources,
     jsSources;
 
+sassSources = [
+  'assets/sass/*.sass'
+];
+
 cssSources = [
-  'assets/css/*.sass'
+  'assets/css/*.css'
 ];
 
 jsSources = [
   'assets/js/*.js'
 ];
 
+// Compile Sass files
 gulp.task('sass', function(){
-  return gulp.src(cssSources)
+  return gulp.src(sassSources)
     .pipe(sass({
       outputStyle: 'compressed'
     }))
@@ -26,17 +33,19 @@ gulp.task('sass', function(){
       browsers: ['last 2 versions'],
       cascade: false
     }))
-    .pipe(gulp.dest('css'))
+    .pipe(gulp.dest('assets/css'))
+});
+
+// Concat and minify all .css files
+gulp.task('css', function(){
+    return gulp.src(cssSources)
+    .pipe(concatCss("main.css"))
+    .pipe(cleanCSS({compatibility: 'ie8'}))
+    .pipe(gulp.dest('css/'))
     .pipe(browserSync.reload({
       stream: true
     }));
 });
-
-// gulp.task('css', function(){
-//     return gulp.src('css/*.css')
-//     .pipe(concatCss("style.css"))
-//     .pipe(gulp.dest('/'));
-// });
 
 gulp.task('js', function() {
   gulp.src(jsSources)
@@ -55,15 +64,9 @@ gulp.task('html', function(){
     }));
 });
 
-gulp.task('misc', function(){
-	gulp.src(['js/*.json'])
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-});
-
-gulp.task('watch', ['browserSync', 'js', 'misc', 'sass'], function(){
-  gulp.watch(cssSources, ['sass']);
+gulp.task('watch', ['browserSync', 'js', 'sass', 'css'], function(){
+  gulp.watch(sassSources, ['sass']);
+  gulp.watch(cssSources, ['css']);
   gulp.watch('*.html', ['html']);
   gulp.watch(jsSources, ['js']);
 });
@@ -76,4 +79,4 @@ gulp.task('browserSync', function() {
   });
 });
 
-gulp.task('default', ['sass', 'js', 'html', 'misc', 'watch']);
+gulp.task('default', ['sass', 'css', 'js', 'html', 'watch']);

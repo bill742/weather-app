@@ -6,17 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Weather App</title>
   <link href="https://fonts.googleapis.com/css?family=Galada|Lato" rel="stylesheet">
-  <link href="css/owfont-regular.min.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
   <div class="container">
   <div class="wrapper">
     <h1>Weather App</h1>
     <h2></h2>
+    <div class="search-container">
+        <input type="text" name="search" id="search" class="search" value="" placeholder="Enter a city">
+        <input type="button" name="submit" value="Search" class="searchBtn" onclick="getCity(search);">
+    </div>
     <div class="content">
-      <input type="text" name="search" id="search" class="search" value="" placeholder="Enter a city">
-      <input type="button" name="submit" value="Search" class="searchBtn" onclick="getCity(search);">
+
 
       <div class="data" id="dataBox">
 
