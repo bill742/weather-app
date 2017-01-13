@@ -23,7 +23,7 @@ function getCityData() {
     // output += '<img src=http://openweathermap.org/img/w/' + data.list[0].weather[0].icon + '.png  class="data-img">';
     output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
     output += '<p>' + data.list[0].weather[0].main + '</p>';
-    output += '<p id="unitText" class="unitText">Current Temperature: ' + splitTemp + unitIcon + '</p>';
+    output += '<p id="unitText" class="unit-text">Current Temperature: ' + splitTemp + unitIcon + '</p>';
 
     GetSearchResults(dataCity);
 
