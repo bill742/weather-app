@@ -9,10 +9,8 @@ if ("geolocation" in navigator) {
     loadJSON(localUrl,
          function(data) {
            city = data.results[5].address_components[0].long_name;
-        //    console.log(city);
            getCityData(city);
         }
-        //  ,function(xhr) { console.error(xhr);}
     );
 
   });

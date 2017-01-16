@@ -1,6 +1,5 @@
 var unit = "imperial";
 var unitIcon = "°F";
-var city;
 
 // Swtich between celcius and Fahrenheit
 function changeUnit() {
@@ -15,7 +14,7 @@ function changeUnit() {
       unit = "imperial";
       elem.value = 'Show me Celcius';
   }
-  // document.getElementById('unitText').innerHTML = '<p id="unitText">Current Temperature: ' + splitTemp + unitIcon + '</p>';
+
   getCityData();
 
 }

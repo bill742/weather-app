@@ -9,20 +9,20 @@
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Weather App</h1>
-    <h2></h2>
-    <div class="search-container">
-        <input type="text" name="search" id="search" class="search" value="" placeholder="Enter a city">
-        <input type="button" name="submit" value="Search" class="search-btn" onclick="getCity(search);">
-    </div>
-    <div class="content">
+  <header>
+      <h1>Weather App</h1>
+      <h2>Search for your local weather and cities around the world</h2>
+      <div class="search-container">
+          <input type="text" name="search" id="search" class="search" value="" placeholder="Enter a city">
+          <input type="button" name="submit" value="Search" class="search-btn" onclick="getCity(search);">
+      </div>
+  </header>
+  <section class="content">
       <div class="data" id="dataBox">
 
       </div>
       <input type="button" name="units" class="unit-btn" id="unitBtn" onclick="changeUnit();" value="Show me Celcius"></input>
-    </div>
-  </div>
+  </section>
 
   <script
   src="https://code.jquery.com/jquery-2.2.4.min.js"

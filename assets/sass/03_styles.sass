@@ -11,15 +11,22 @@ $grey: #ccc
   border-radius: 10px
   color: $white
   cursor: pointer
+  font-size: 1.5em
   padding: 10px 15px
 
 
 body
   background-color: $black
+  background-position: 0 197px
+  background-repeat: no-repeat
+  background-size: cover
   font-family: 'Lato', sans-serif
   font-size: 16px
 
-.container
+header
+  background-color: $black
+  // opacity: 0.6
+  overflow: auto
   padding: 40px
 
 h1
@@ -29,26 +36,36 @@ h1
   padding-bottom: 30px
   text-align: left
 
+h2
+  clear: left
+  color: $white
+  float: left
+  font-size: 1.5em
+  line-height: 125%
+
 // Search
 .search-container
   clear: left
   float: left
-  margin-bottom: 20px
+  margin: 20px 0
 
-  @media (min-width: 800px)
+  @media (min-width: 1150px)
     clear: none
     float: right
     margin-bottom: 0
+    position: relative
+    top: -60px
 
 
 .search
-  background-color: $grey
-  border: 2px solid $white
+  border: 2px solid $blue
   border-radius: 10px
-  font-size: 1em
+  float: left
+  font-size: 1.5em
   margin-right: 6px
-  padding: 7px 4px 7px 8px
-  width: 50%
+  margin-bottom: 10px
+  padding: 10px 4px 10px 8px
+  width: 100%
 
   @media (min-width: 500px)
     width: 280px
@@ -56,32 +73,35 @@ h1
 
 .search-btn
   @include btn
-
-.unit-btn
-  @include btn
+  clear: left
   display: block
-  margin: 20px auto
-  width: 160px
+  margin: 0 auto
 
-  &:hover
-    border: 2px solid $black
+  @media (min-width: 420px)
+    clear: none
+    display: inline-block
+    float: left
+    margin: 0
 
 // data
 .content
-  background-color: $white
+  background-color: $black
   clear: both
+  color: $white
+  opacity: .7
   padding: 40px 0
 
+  @media (min-width: 420px)
+    margin: 40px
+
 .data
-  background-color: $white
   clear: both
-  margin: 40px
-  opacity: .6
-  padding: 40px
+  min-height: 260px
+  padding: 40px 0
   text-align: center
 
 .data-city
-  font-size: 1.875em
+  font-size: 2.5em
   padding-bottom: 15px
 
 .data-img
@@ -90,8 +110,20 @@ h1
 
 .owf
   display: block
-  font-size: 70px
+  font-size: 90px
   margin: 0 auto
 
 .unit-text
+  font-size: 1.5em
+  line-height: 125%
   padding-top: 10px
+  margin: 0 10px
+
+.unit-btn
+  @include btn
+  display: block
+  margin: 0 auto
+  // width: 160px
+
+  &:hover
+    border: 2px solid $black
