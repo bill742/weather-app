@@ -30,13 +30,25 @@ h1
 
 // Search
 .search-container
-  float: right
+  clear: left
+  float: left
+  margin-bottom: 20px
+
+  @media (min-width: 800px)
+    clear: none
+    float: right
+    margin-bottom: 0
+
 
 .search
   border: 1px solid $grey
   font-size: 1em
   padding: 7px 4px
-  width: 280px
+  width: 50%
+
+  @media (min-width: 500px)
+    width: 280px
+
 
 .search-btn
   @include btn

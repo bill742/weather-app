@@ -1,37 +1,33 @@
 function getCityData() {
   // Ajax request data
-
   var wapi = "http://api.openweathermap.org/data/2.5/forecast/weather?q=" + city + "&units=" + unit + "&id=524901&APPID=b32c84201db94b92ed42d393cac6526b";
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', wapi, false);
-  xhr.send(null);
 
   var output;
 
   // check for connection
-  if (xhr.readyState === 4) {
+  var xhr = $.getJSON( wapi, function() {
+    if (xhr.readyState === 4) {
 
-    var data = JSON.parse(xhr.responseText);
-    // console.log(data);
+      var data = JSON.parse(xhr.responseText);
+      // console.log(data);
 
-    var temp = data.list[0].main.temp;
-    var splitTemp = JSON.stringify(temp).split('.', 1);
-    var dataCity = data.city.name;
+      var temp = data.list[0].main.temp;
+      var splitTemp = JSON.stringify(temp).split('.', 1);
+      var dataCity = data.city.name;
 
-    output = '<p class="data-city">' + dataCity + '</p>';
+      output = '<p class="data-city">' + dataCity + '</p>';
+      output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
+      output += '<p>' + data.list[0].weather[0].main + '</p>';
+      output += '<p id="unitText" class="unit-text">Current Temperature: ' + splitTemp + unitIcon + '</p>';
 
-    // output += '<img src=http://openweathermap.org/img/w/' + data.list[0].weather[0].icon + '.png  class="data-img">';
-    output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
-    output += '<p>' + data.list[0].weather[0].main + '</p>';
-    output += '<p id="unitText" class="unit-text">Current Temperature: ' + splitTemp + unitIcon + '</p>';
+      GetSearchResults(dataCity);
 
-    GetSearchResults(dataCity);
+      document.getElementById('dataBox').innerHTML = output;
 
-    document.getElementById('dataBox').innerHTML = output;
-
-  } else {
-    output = "Error - no response";
-  }
+    } else {
+      output = "Error - no response";
+    }
+  });
 
   document.getElementById('dataBox').innerHTML = output;
 }

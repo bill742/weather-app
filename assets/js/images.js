@@ -4,7 +4,7 @@ function GetSearchResults(dataCity){
 
     // http://jsfiddle.net/cmacpherson/6g9qtbtc/
 
-    var url = "https://api.gettyimages.com/v3/search/images/creative?license_models=royaltyfree&orientations=Horizontal&fields=comp&phrase=" + dataCity;
+    var url = "https://api.gettyimages.com:443/v3/search/images/creative?file_types=jpg&graphical_styles=photography&license_models=royaltyfree&number_of_people=none&orientations=Horizontal%2CPanoramicHorizontal&fields=comp&phrase=" + dataCity;
 
     $.ajax(
     {
@@ -16,15 +16,27 @@ function GetSearchResults(dataCity){
             }})
     .done(function(data){
         // console.log(data);
-        // for(var i = 0;i<data.images.length;i++)
-        // {
-        //    $("#dataBox").append("<img src='" + data.images[i].display_sizes[0].uri + "'/>");
-        // }
-        var bgUrl = "url(" + data.images[0].display_sizes[0].uri + " ) no-repeat";
-        $(".content").css("background", bgUrl);
-        $(".content").css("background-size", "cover");
+        // console.log(data.result_count);
+
+        var randImg;
+        var bgUrl;
+        var results = data.result_count;
+
+        if (results > 30) {
+          randImg = Math.floor(Math.random() * 29) + 1;
+          bgUrl = "url(" + data.images[randImg].display_sizes[0].uri + " ) no-repeat";
+          $(".content").css("background", bgUrl);
+          $(".content").css("background-size", "cover");
+        } else if (results > 0) {
+          randImg = Math.floor(Math.random() * data.result_count) + 1;
+          bgUrl = "url(" + data.images[randImg].display_sizes[0].uri + " ) no-repeat";
+          $(".content").css("background", bgUrl);
+          $(".content").css("background-size", "cover");
+        } else {
+          console.log("no images found");
+        }
     })
     .fail(function(data){
-        alert(JSON.stringify(data,2));
+        // todo: add default image to load
     });
 }

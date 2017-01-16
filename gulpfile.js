@@ -33,7 +33,7 @@ gulp.task('sass', function(){
       browsers: ['last 2 versions'],
       cascade: false
     }))
-    .pipe(gulp.dest('assets/css'))
+    .pipe(gulp.dest('assets/css'));
 });
 
 // Concat and minify all .css files
