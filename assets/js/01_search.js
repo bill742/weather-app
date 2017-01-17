@@ -9,18 +9,19 @@ function getCityData() {
     if (xhr.readyState === 4) {
 
       var data = JSON.parse(xhr.responseText);
-      console.log(data);
+    //   console.log(data);
 
       var temp = data.list[0].main.temp;
       var splitTemp = JSON.stringify(temp).split('.', 1);
       var dataCity = data.city.name;
+      var code = data.list[0].weather[0].id;
 
       output = '<p class="data-city">' + dataCity + '</p>';
       output += '<i class="owf owf-' + data.list[0].weather[0].id + '"></i>';
       output += '<p class="unit-text">' + data.list[0].weather[0].main + '</p>';
       output += '<p id="unitText" class="unit-text">Current Temperature: ' + splitTemp + unitIcon + '</p>';
 
-      getImages(dataCity);
+      getImages(code);
 
       document.getElementById('dataBox').innerHTML = output;
 
