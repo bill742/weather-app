@@ -17,6 +17,7 @@ $grey: #ccc
 
 body
   background-color: $black
+  background-image: url(/images/950-sunny.jpg)
   background-position: 0 197px
   background-repeat: no-repeat
   background-size: cover
@@ -108,6 +109,10 @@ h2
   display: block
   margin: 0 auto
 
+.nogeo
+  font-size: 2.5em
+  text-align: center
+
 .owf
   display: block
   font-size: 90px
@@ -121,9 +126,8 @@ h2
 
 .unit-btn
   @include btn
-  display: block
+  display: none
   margin: 0 auto
-  // width: 160px
 
   &:hover
     border: 2px solid $black

@@ -1,12 +1,6 @@
 function getImages(code){
 
-    // var apiKey = 'sk6rmwqmf3gmxdfxt3at4rxe';
-    //
-    // var url = "https://api.gettyimages.com:443/v3/search/images/creative?file_types=jpg&graphical_styles=photography&license_models=royaltyfree&number_of_people=none&orientations=Horizontal%2CPanoramicHorizontal&fields=comp&phrase=" + dataCity;
-
     var path ="/images/"
-    console.log(code);
-
 
     var randImg;
     var bgUrl;
@@ -22,9 +16,12 @@ function getImages(code){
       bgUrl = "url(" + path + "600-snow.jpg)";
     } else if (code > 699 && code < 800) {
       bgUrl = "url(" + path + "700-fog.jpg)";
+    } else if (code > 800 && code < 900) {
+      bgUrl = "url(" + path + "800-clouds.jpg)";
+    } else if (code > 899 && code < 950 || code > 958 && code < 970) {
+      bgUrl = "url(" + path + "900-hurricane.jpg)";
     } else {
-      console.log("no images found");
-      bgUrl="";
+      bgUrl = "url(" + path + "950-sunny.jpg)";
     }
 
     $("body").css("background-image", bgUrl);

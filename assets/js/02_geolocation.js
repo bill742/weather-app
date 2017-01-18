@@ -1,6 +1,8 @@
 // Preload with geoloaction if possible
 if ("geolocation" in navigator) {
   navigator.geolocation.getCurrentPosition(function(position) {
+    document.getElementById('nogeo').style.display = 'none';
+    document.getElementById('unitBtn').style.display = 'block';
     var x = position.coords.latitude;
     var y = position.coords.longitude;
     var localUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
@@ -18,8 +20,7 @@ if ("geolocation" in navigator) {
   // console.log("geolocation IS NOT available");
 }
 
-function loadJSON(path, success, error)
-{
+function loadJSON(path, success, error) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function()
     {
