@@ -8,6 +8,7 @@
 /node_modules
 /backup
 /owfont-master
+*.bk
 
 # Compiled source #
 ###################
