@@ -1,39 +1,20 @@
 // Preload with geoloaction if possible
 if ("geolocation" in navigator) {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    document.getElementById('nogeo').style.display = 'none';
-    document.getElementById('unitBtn').style.display = 'block';
-    var x = position.coords.latitude;
-    var y = position.coords.longitude;
-    var localUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng='+x+','+y+'&sensor=true&key=AIzaSyAlM9dEqJwCvY0l54lyQdvL57HqDPgOJ68';
 
-    // Retreive JSON data from Google Maps URL
-    loadJSON(localUrl,
-         function(data) {
-           city = data.results[5].address_components[0].long_name;
-           getCityData(city);
-        }
-    );
+    var localInfo = "http://ip-api.com/json/?callback=?";
 
-  });
+    $.getJSON(localInfo, function(data) {
+        $.each(data, function(k, v) {
+            if (k === "city"){
+                city = v;
+
+                document.getElementById('nogeo').style.display = 'none';
+                document.getElementById('unitBtn').style.display = 'block';
+
+                getCityData(city);
+            }
+        });
+    });
 } else {
   // console.log("geolocation IS NOT available");
-}
-
-function loadJSON(path, success, error) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function()
-    {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                if (success)
-                    success(JSON.parse(xhr.responseText));
-            } else {
-                if (error)
-                    error(xhr);
-            }
-        }
-    };
-    xhr.open("GET", path, true);
-    xhr.send();
 }
