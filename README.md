@@ -5,4 +5,4 @@ A JS app that allows users to search for weather conditions by city. The app con
 ToDO:
 Update geolocation call to work with Chrome
 
-[View Demo](https://codepen.io/bill742/full/ZLLrYx/)
+[View Demo](http://codepen.io/bill742/full/ZLLrYx/)
