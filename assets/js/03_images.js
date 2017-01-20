@@ -1,6 +1,6 @@
 function getImages(code){
 
-    var path ="/bill742/weather-app/master/images/"
+    var path ="https://raw.githubusercontent.com/bill742/weather-app/master/images/"
 
     var randImg;
     var bgUrl;
