@@ -8,7 +8,6 @@ if ('geolocation' in navigator) {
       if (k === 'city'){
         city = v;
 
-        document.getElementById('nogeo').style.display = 'none';
         document.getElementById('unitBtn').style.display = 'block';
 
         getCityData(city);
