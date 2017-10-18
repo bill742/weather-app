@@ -1,20 +1,20 @@
 // Preload with geoloaction if possible
-if ("geolocation" in navigator) {
+if ('geolocation' in navigator) {
 
-    var localInfo = "http://ip-api.com/json/?callback=?";
+  var localInfo = 'http://ip-api.com/json/?callback=?';
 
-    $.getJSON(localInfo, function(data) {
-        $.each(data, function(k, v) {
-            if (k === "city"){
-                city = v;
+  $.getJSON(localInfo, function(data) {
+    $.each(data, function(k, v) {
+      if (k === 'city'){
+        city = v;
 
-                document.getElementById('nogeo').style.display = 'none';
-                document.getElementById('unitBtn').style.display = 'block';
+        document.getElementById('nogeo').style.display = 'none';
+        document.getElementById('unitBtn').style.display = 'block';
 
-                getCityData(city);
-            }
-        });
+        getCityData(city);
+      }
     });
+  });
 } else {
   // console.log("geolocation IS NOT available");
 }
