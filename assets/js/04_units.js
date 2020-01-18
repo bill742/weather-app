@@ -1,6 +1,3 @@
-unit = 'imperial';
-unitIcon = '°F';
-
 // Swtich between celcius and Fahrenheit
 function changeUnit() {
   var elem = document.getElementById('unitBtn');
