@@ -22,7 +22,6 @@ function css() {
 
   var mergedStream = merge(sassStream, cssStream)
     .pipe(autoprefixer({
-      // browsers: ['last 2 versions'],
       cascade: false
     }))
     .pipe(concat('styles.css'))
@@ -44,14 +43,15 @@ function js() {
 }
 exports.js = js;
 
-// gulp.task('watch', () =>
-//   gulp.watch(sassSources, ['css'])
-//   gulp.watch(cssSources, ['css'])
-//   gulp.watch('*.html', ['html'])
-//   gulp.watch(jsSources, ['js'])
-// );
+function watch(done) {
+  gulp.watch(sassSources, css);
+  gulp.watch(cssSources, css);
+  gulp.watch(jsSources, js);
+  done();
+}
 
 exports.default = gulp.series(
   exports.css,
   exports.js,
+  watch,
 );
