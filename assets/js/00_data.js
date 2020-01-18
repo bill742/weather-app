@@ -1,5 +1,8 @@
 var city, unit, unitIcon;
 
+console.log('test');
+
+
 function getCityData() {
   document.getElementById('unitBtn').style.display = 'block';
 
