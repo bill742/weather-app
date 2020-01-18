@@ -1,23 +1,17 @@
-var gulp = require('gulp'),
-  sass = require('gulp-sass'),
-  browserSync = require('browser-sync'),
-  concat = require('gulp-concat'),
-  uglify = require('gulp-uglify'),
-  autoprefixer = require('gulp-autoprefixer'),
-  concatCss = require('gulp-concat-css'),
-  minify = require('gulp-minify-css'),
-  merge = require('merge-stream');
+const autoprefixer = require('gulp-autoprefixer');
+const babel = require('gulp-babel');
+const concat = require('gulp-concat');
+const cleanCSS = require('gulp-clean-css');
+const gulp = require('gulp');
+const merge = require('merge-stream');
+const sass = require('gulp-sass');
+const uglify = require('gulp-uglify');
 
-var sassSources,
-  cssSources,
-  jsSources;
+const sassSources = ['assets/sass/*.sass'];
+const cssSources = ['assets/css/*.css'];
+const jsSources = ['assets/js/*.js'];
 
-sassSources = ['assets/sass/*.sass'];
-cssSources = ['assets/css/*.css'];
-jsSources = ['assets/js/*.js'];
-
-gulp.task('css', function(){
-  // Prefix and concat SASS files
+function css() {
   var sassStream = gulp.src(sassSources)
     .pipe(sass())
     .pipe(concat('sass-files.sass'));
@@ -28,48 +22,36 @@ gulp.task('css', function(){
 
   var mergedStream = merge(sassStream, cssStream)
     .pipe(autoprefixer({
-      browsers: ['last 2 versions'],
       cascade: false
     }))
-    .pipe(concat('main.css'))
-    .pipe(minify())
-    .pipe(gulp.dest('css/'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
+    .pipe(concat('styles.css'))
+    .pipe(cleanCSS())
+    .pipe(gulp.dest('./css'));
   return mergedStream;
-});
+}
+exports.css = css;
 
-gulp.task('js', function() {
-  gulp.src(jsSources)
+function js() {
+  return gulp.src(jsSources)
+    .pipe(babel(
+      {presets: ['@babel/env']}
+    ))
     .pipe(concat('scripts.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('js'))
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-});
+    .pipe(
+      gulp.dest('./js'))
+}
+exports.js = js;
 
-gulp.task('html', function(){
-  gulp.src('*.html')
-    .pipe(browserSync.reload({
-      stream: true
-    }));
-});
+function watch(done) {
+  gulp.watch(sassSources, css);
+  gulp.watch(cssSources, css);
+  gulp.watch(jsSources, js);
+  done();
+}
 
-gulp.task('watch', ['browserSync', 'js', 'css'], function(){
-  gulp.watch(sassSources, ['css']);
-  gulp.watch(cssSources, ['css']);
-  gulp.watch('*.html', ['html']);
-  gulp.watch(jsSources, ['js']);
-});
-
-gulp.task('browserSync', function() {
-  browserSync({
-    server: {
-      baseDir: './'
-    },
-  });
-});
-
-gulp.task('default', ['css', 'js', 'html', 'watch']);
+exports.default = gulp.series(
+  exports.css,
+  exports.js,
+  watch,
+);
