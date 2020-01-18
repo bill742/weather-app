@@ -1,5 +1,6 @@
 var city, unit, unitIcon;
 
+console.log('test2');
 console.log('test');
 
 
