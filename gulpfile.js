@@ -37,7 +37,6 @@ function js() {
       {presets: ['@babel/env']}
     ))
     .pipe(concat('scripts.js'))
-    .pipe(uglify())
     .pipe(
       gulp.dest('./js'))
 }
@@ -49,6 +48,14 @@ function watch(done) {
   gulp.watch(jsSources, js);
   done();
 }
+
+function buildJs() {
+  return gulp.src('./js/scripts.js')
+    .pipe(uglify())
+    .pipe(
+      gulp.dest('./js'));
+}
+exports.buildJs = buildJs;
 
 exports.default = gulp.series(
   exports.css,
