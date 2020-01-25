@@ -53,7 +53,7 @@ function buildJs() {
   return gulp.src('./js/scripts.js')
     .pipe(uglify())
     .pipe(
-      gulp.dest('./js'));
+      gulp.dest('./build/js'));
 }
 exports.buildJs = buildJs;
 
