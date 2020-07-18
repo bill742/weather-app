@@ -1,9 +1,11 @@
 // Swtich between celcius and Fahrenheit
-function changeUnit() {
+function changeUnit(unit, unitIcon) {
+  console.log('click!');
+
   var elem = document.getElementById('unitBtn');
 
   if (elem.value == 'Show me Celcius') {
-    unitIcon = '°C';
+    // unitIcon = '°C';
     unit = 'metric';
     elem.value = 'Show me Fahrenheit';
   } else {
@@ -12,6 +14,6 @@ function changeUnit() {
     elem.value = 'Show me Celcius';
   }
 
-  getCityData();
+  getData();
 
 }
