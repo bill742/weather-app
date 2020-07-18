@@ -1,65 +1,45 @@
 (function () {
+    function init() {
+        var element = document.querySelector('.data'); // this.element = element;
 
-  console.log('here???');
+        var unit = 'metric';
+        var unitIcon = '°C';
+        // TODO: get location data from browser
+        var city = 'Toronto';
 
-  function init() {
-    const element = document.querySelector('.data');
-    // this.element = element;
+        const searchBtn = document.querySelector('.search-btn');
+        const unitBtn = document.querySelector('.unit-btn');
 
-    let unit = 'celcius';
-    let unitIcon = '°C';
-    let unitBtn = document.querySelector('.unitBtn');
+        searchBtn.addEventListener('click', getData(city, unit, unitIcon), false);
+        unitBtn.addEventListener('click', changeUnit(unit, unitIcon), false)
 
-    let city = 'Toronto';
+        getData(city);
+    }
 
+    function getData(city, unit, unitIcon) {
+        let output = '';
+        const dataBox = document.getElementById('dataBox');
 
-    console.log(city);
+        // TODO: add loading animation
 
-    // this.init.apply();
+        // TODO: use async/await?
+        setTimeout(() => {
+            fetch('http://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=' + unit + '&id=524901&APPID=b32c84201db94b92ed42d393cac6526b')
+            .then(response => response.json())
+            .then(json => {
+                console.log(json);
+                let splitTemp = JSON.stringify(json.main.temp).split('.', 1);
+                output += `<p class="data-city">${city}</p>`;
+                output += `<i class="owf owf-${json.weather[0].id}"></i>`;
+                output += `<p class="unit-text">${json.weather[0].main}</p>`
+                output += `<p id="unitText" class="unit-text">Current Temperature: ${splitTemp} ${unitIcon}</p>`
+                dataBox.innerHTML = output;
+            }
+            );
+        }, 1000);
 
-    getCityData(city);
-
-
-  }
-
-  function getCityData() {
-
-      unitBtn.classList.add('visible');
-
-      console.log(this.city);
-
+        unitBtn.classList.add('visible');
     };
 
-  // function getCityData() {
-
-  //
-
-  //   // $.ajax({
-  //   //   url: 'http://api.openweathermap.org/data/2.5/weather?q=' + city + '&units=' + unit + '&id=524901&APPID=b32c84201db94b92ed42d393cac6526b',
-  //   //   data: {
-  //   //     format: 'json'
-  //   //   },
-  //   //   error: function() {
-  //   //     $('#dataBox').html('<p class="unit-text">There was an error retreiving results. Please try again.</p>');
-  //   //   },
-  //   //   dataType: 'jsonp',
-  //   //   success: function(data) {
-  //   //     $('#dataBox').empty();
-  //   //     var temp = data.main.temp;
-  //   //     var splitTemp = JSON.stringify(temp).split('.', 1);
-  //   //     var dataCity = data.name;
-  //   //     var code = data.weather[0].id;
-  //   //     $('#dataBox')
-  //   //       .append('<p class="data-city">' + dataCity + '</p>')
-  //   //       .append('<i class="owf owf-' + data.weather[0].id + '"></i>')
-  //   //       .append('<p class="unit-text">' + data.weather[0].main + '</p>')
-  //   //       .append('<p id="unitText" class="unit-text">Current Temperature: ' + splitTemp + unitIcon + '</p>');
-  //   //     getImages(code);
-  //   //   },
-  //   //   type: 'GET'
-  //   // });
-  // }
-
-
-  init();
+    init();
 })();
