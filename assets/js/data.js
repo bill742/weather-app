@@ -1,13 +1,27 @@
 (function () {
     'use strict';
 
+    // TODO: decalre variables with types
     const element = document.querySelector('.data'); // this.element = element;
     const searchBtn = document.querySelector('.search-btn');
     const unitBtn = document.querySelector('.unit-btn');
 
-    let unit = 'metric';
-    let unitIcon = '°C';
+    var unit;
+    var unitIcon;
+    var unitBtnText;
 
+    var isCelcius = true;
+
+    if (isCelcius === true) {
+        unit = 'metric';
+        unitIcon = '°C';
+        unitBtnText = 'Show me Fahrenheit';
+    } else {
+        unitIcon = '°F';
+        unit = 'imperial';
+        unitBtnText = 'Show me Celcius';
+    }
+    
     var geoOptions = {
         enableHighAccuracy: true,
         timeout: 5000,
@@ -16,15 +30,14 @@
 
     navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 
-    // searchBtn.addEventListener('click', getData(city, unit, unitIcon), false);
-    // unitBtn.addEventListener('click', changeUnit(unit, unitIcon), false);
+    // searchBtn.addEventListener('click', getData(city, unit, unitIcon));
 
-    function getData(lat, lon, unit, unitIcon) {
+    function getData(lat, lon, isCelcius) {
         let output = '';
         const dataBox = document.getElementById('dataBox');
 
         // TODO: add loading animation
-        // TODO: use async/await?
+        // TODO: fetch data with async/await?
         setTimeout(() => {
             fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${unit}&id=524901&APPID=b32c84201db94b92ed42d393cac6526b`)
             .then(response => response.json())
@@ -46,17 +59,25 @@
         }, 1000);
 
         unitBtn.classList.add('visible');
+        unitBtn.addEventListener('click', () => { changeUnit(isCelcius); }, false);
     };
 
     function geoSuccess(pos) {
         var crd = pos.coords;
         var lat = `${crd.latitude}`;
         var lon = `${crd.longitude}`;
-        getData(lat, lon, unit, unitIcon)
+        getData(lat, lon, isCelcius)
     }
 
     function geoError(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         document.getElementById('dataBox').innerHTML = '<p>Location not available. Please search for a location.</p>'
+    }
+
+    function changeUnit(isCelcius) {
+        isCelcius ? false : true;
+        console.log(isCelcius);
+        navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
+        return isCelcius;
     }
 })();

@@ -15,45 +15,41 @@
 //   }
 // };
 "use strict";
-// Swtich between celcius and Fahrenheit
-// function changeUnit(unit, unitIcon) {
-//   console.log('click!');
-//   var elem = document.getElementById('unitBtn');
-//   if (elem.value == 'Show me Celcius') {
-//     // unitIcon = '°C';
-//     unit = 'metric';
-//     elem.value = 'Show me Fahrenheit';
-//   } else {
-//     unitIcon = '°F';
-//     unit = 'imperial';
-//     elem.value = 'Show me Celcius';
-//   }
-//   getData();
-// }
-"use strict";
 "use strict";
 
 (function () {
-  'use strict';
+  'use strict'; // TODO: decalre variables with types
 
   var element = document.querySelector('.data'); // this.element = element;
 
   var searchBtn = document.querySelector('.search-btn');
   var unitBtn = document.querySelector('.unit-btn');
-  var unit = 'metric';
-  var unitIcon = '°C';
+  var unit;
+  var unitIcon;
+  var unitBtnText;
+  var isCelcius = true;
+
+  if (isCelcius === true) {
+    unit = 'metric';
+    unitIcon = '°C';
+    unitBtnText = 'Show me Fahrenheit';
+  } else {
+    unitIcon = '°F';
+    unit = 'imperial';
+    unitBtnText = 'Show me Celcius';
+  }
+
   var geoOptions = {
     enableHighAccuracy: true,
     timeout: 5000,
     maximumAge: 0
   };
-  navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions); // searchBtn.addEventListener('click', getData(city, unit, unitIcon), false);
-  // unitBtn.addEventListener('click', changeUnit(unit, unitIcon), false);
+  navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions); // searchBtn.addEventListener('click', getData(city, unit, unitIcon));
 
-  function getData(lat, lon, unit, unitIcon) {
+  function getData(lat, lon, isCelcius) {
     var output = '';
     var dataBox = document.getElementById('dataBox'); // TODO: add loading animation
-    // TODO: use async/await?
+    // TODO: fetch data with async/await?
 
     setTimeout(function () {
       fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(lat, "&lon=").concat(lon, "&units=").concat(unit, "&id=524901&APPID=b32c84201db94b92ed42d393cac6526b")).then(function (response) {
@@ -73,6 +69,9 @@
       });
     }, 1000);
     unitBtn.classList.add('visible');
+    unitBtn.addEventListener('click', function () {
+      changeUnit(isCelcius);
+    }, false);
   }
 
   ;
@@ -81,12 +80,19 @@
     var crd = pos.coords;
     var lat = "".concat(crd.latitude);
     var lon = "".concat(crd.longitude);
-    getData(lat, lon, unit, unitIcon);
+    getData(lat, lon, isCelcius);
   }
 
   function geoError(err) {
     console.warn("ERROR(".concat(err.code, "): ").concat(err.message));
     document.getElementById('dataBox').innerHTML = '<p>Location not available. Please search for a location.</p>';
+  }
+
+  function changeUnit(isCelcius) {
+    isCelcius ? false : true;
+    console.log(isCelcius);
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
+    return isCelcius;
   }
 })();
 "use strict";
