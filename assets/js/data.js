@@ -1,16 +1,14 @@
 (function () {
-    'use strict';
-
     // TODO: decalre variables with types
     const element = document.querySelector('.data'); // this.element = element;
     const searchBtn = document.querySelector('.search-btn');
     const unitBtn = document.querySelector('.unit-btn');
 
-    var unit;
-    var unitIcon;
-    var unitBtnText;
+    let unit;
+    let unitIcon;
+    let unitBtnText;
 
-    var isCelcius = true;
+    let isCelcius = true;
 
     if (isCelcius === true) {
         unit = 'metric';
@@ -21,16 +19,19 @@
         unit = 'imperial';
         unitBtnText = 'Show me Celcius';
     }
-    
-    var geoOptions = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-    };
-
-    navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 
     // searchBtn.addEventListener('click', getData(city, unit, unitIcon));
+
+    function changeUnit(isCelcius) {
+        isCelcius ? false : true;
+        console.log(isCelcius);
+        navigator.geolocation.getCurrentPosition(
+            geoSuccess,
+            geoError,
+            geoOptions
+        );
+        return isCelcius;
+    }
 
     function getData(lat, lon, isCelcius) {
         let output = '';
@@ -39,12 +40,19 @@
         // TODO: add loading animation
         // TODO: fetch data with async/await?
         setTimeout(() => {
-            fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${unit}&id=524901&APPID=b32c84201db94b92ed42d393cac6526b`)
-                .then(response => response.json())
-                .then(json => {
+            fetch(
+                `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${unit}&id=524901&APPID=b32c84201db94b92ed42d393cac6526b`
+            )
+                .then((response) => response.json())
+                .then((json) => {
                     console.log(json);
-                    let splitTemp = JSON.stringify(json.current.temp).split('.', 1);
-                    let splitFeel = JSON.stringify(json.current.feels_like).split('.', 1);
+                    const splitTemp = JSON.stringify(json.current.temp).split(
+                        '.',
+                        1
+                    );
+                    const splitFeel = JSON.stringify(
+                        json.current.feels_like
+                    ).split('.', 1);
                     // output += `<p class="data-city">${city}</p>`;
                     output += `<i class="owf owf-${json.current.weather[0].id}"></i>`;
                     output += `<p class="unit-text">${json.current.weather[0].main}</p>`;
@@ -52,32 +60,39 @@
                     output += `<p class="unit-text">Feels like: ${splitFeel} ${unitIcon}</p>`;
                     dataBox.innerHTML = output;
 
-                    let code = json.current.weather[0].id;
+                    const code = json.current.weather[0].id;
                     getImages(code);
-                }
-                );
+                });
         }, 1000);
 
         unitBtn.classList.add('visible');
-        unitBtn.addEventListener('click', () => { changeUnit(isCelcius); }, false);
+        unitBtn.addEventListener(
+            'click',
+            () => {
+                changeUnit(isCelcius);
+            },
+            false
+        );
     }
 
+    const geoOptions = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+    };
+
     function geoSuccess(pos) {
-        var crd = pos.coords;
-        var lat = `${crd.latitude}`;
-        var lon = `${crd.longitude}`;
+        const crd = pos.coords;
+        const lat = `${crd.latitude}`;
+        const lon = `${crd.longitude}`;
         getData(lat, lon, isCelcius);
     }
 
     function geoError(err) {
         console.warn(`ERROR(${err.code}): ${err.message}`);
-        document.getElementById('dataBox').innerHTML = '<p>Location not available. Please search for a location.</p>';
+        document.getElementById('dataBox').innerHTML =
+            '<p>Location not available. Please search for a location.</p>';
     }
 
-    function changeUnit(isCelcius) {
-        isCelcius ? false : true;
-        console.log(isCelcius);
-        navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
-        return isCelcius;
-    }
+    navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 })();
