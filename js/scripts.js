@@ -18,25 +18,24 @@
 "use strict";
 
 (function () {
-  'use strict'; // TODO: decalre variables with types
-
+  // TODO: decalre variables with types
   var element = document.querySelector('.data'); // this.element = element;
 
   var searchBtn = document.querySelector('.search-btn');
-  var unitBtn = document.querySelector('.unit-btn');
   var unit;
   var unitIcon;
   var unitBtnText;
+  var unitBtn = document.querySelector('.unit-btn');
   var isCelcius = true;
 
   if (isCelcius === true) {
     unit = 'metric';
     unitIcon = '°C';
-    unitBtnText = 'Show me Fahrenheit';
+    unitBtnText = 'Fahrenheit';
   } else {
     unitIcon = '°F';
     unit = 'imperial';
-    unitBtnText = 'Show me Celcius';
+    unitBtnText = 'Celcius';
   }
 
   var geoOptions = {
@@ -44,9 +43,12 @@
     timeout: 5000,
     maximumAge: 0
   };
-  navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions); // searchBtn.addEventListener('click', getData(city, unit, unitIcon));
 
-  function getData(lat, lon, isCelcius) {
+  function geoSuccess(pos) {
+    var crd = pos.coords;
+    var lat = "".concat(crd.latitude);
+    var lon = "".concat(crd.longitude); // getData(lat, lon, isCelcius);
+
     var output = '';
     var dataBox = document.getElementById('dataBox'); // TODO: add loading animation
     // TODO: fetch data with async/await?
@@ -63,24 +65,12 @@
         output += "<p class=\"unit-text\">".concat(json.current.weather[0].main, "</p>");
         output += "<p id=\"unitText\" class=\"unit-text\">Current Temperature: ".concat(splitTemp, " ").concat(unitIcon, "</p>");
         output += "<p class=\"unit-text\">Feels like: ".concat(splitFeel, " ").concat(unitIcon, "</p>");
-        dataBox.innerHTML = output;
+        dataBox.innerHTML = output; // const unitVal = isCelcius;
+
         var code = json.current.weather[0].id;
         getImages(code);
       });
     }, 1000);
-    unitBtn.classList.add('visible');
-    unitBtn.addEventListener('click', function () {
-      changeUnit(isCelcius);
-    }, false);
-  }
-
-  ;
-
-  function geoSuccess(pos) {
-    var crd = pos.coords;
-    var lat = "".concat(crd.latitude);
-    var lon = "".concat(crd.longitude);
-    getData(lat, lon, isCelcius);
   }
 
   function geoError(err) {
@@ -88,12 +78,24 @@
     document.getElementById('dataBox').innerHTML = '<p>Location not available. Please search for a location.</p>';
   }
 
-  function changeUnit(isCelcius) {
-    isCelcius ? false : true;
-    console.log(isCelcius);
+  unitBtn.addEventListener('click', function () {
+    changeUnit(isCelcius);
+  }, false);
+
+  function changeUnit(unitVal) {
+    if (unitVal === true) {
+      isCelcius = false;
+    } else {
+      isCelcius = true;
+    }
+
     navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
     return isCelcius;
-  }
+  } // searchBtn.addEventListener('click', getData(city, unit, unitIcon))
+  // function getData(lat, lon, isCelcius) {}
+
+
+  navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 })();
 "use strict";
 
