@@ -1,24 +1,10 @@
 (function () {
     // TODO: decalre variables with types
-    const element = document.querySelector('.data'); // this.element = element;
-    const searchBtn = document.querySelector('.search-btn');
 
-    let unit;
-    let unitIcon;
-    let unitBtnText;
+    let unit = 'metric';
+    let unitIcon = '°C';
+    let unitBtnText = 'View in Fahrenheit';
     const unitBtn = document.querySelector('.unit-btn');
-
-    let isCelcius = true;
-
-    if (isCelcius === true) {
-        unit = 'metric';
-        unitIcon = '°C';
-        unitBtnText = 'Fahrenheit';
-    } else {
-        unitIcon = '°F';
-        unit = 'imperial';
-        unitBtnText = 'Celcius';
-    }
 
     const geoOptions = {
         enableHighAccuracy: true,
@@ -30,9 +16,16 @@
         const crd = pos.coords;
         const lat = `${crd.latitude}`;
         const lon = `${crd.longitude}`;
-        // getData(lat, lon, isCelcius);
         let output = '';
         const dataBox = document.getElementById('dataBox');
+
+        if (unit === 'metric') {
+            unitIcon = '°C';
+            unitBtnText = 'View in Fahrenheit';
+        } else {
+            unitIcon = '°F';
+            unitBtnText = 'View in Celcius';
+        }
 
         // TODO: add loading animation
         // TODO: fetch data with async/await?
@@ -56,8 +49,8 @@
                     output += `<p id="unitText" class="unit-text">Current Temperature: ${splitTemp} ${unitIcon}</p>`;
                     output += `<p class="unit-text">Feels like: ${splitFeel} ${unitIcon}</p>`;
                     dataBox.innerHTML = output;
+                    unitBtn.innerHTML = unitBtnText;
 
-                    // const unitVal = isCelcius;
                     const code = json.current.weather[0].id;
                     getImages(code);
                 });
@@ -70,31 +63,26 @@
             '<p>Location not available. Please search for a location.</p>';
     }
 
-    unitBtn.addEventListener(
-        'click',
-        () => {
-            changeUnit(isCelcius);
-        },
-        false
-    );
-
-    function changeUnit(unitVal) {
-        if (unitVal === true) {
-            isCelcius = false;
+    function changeUnit(u) {
+        if (u === 'metric') {
+            unit = 'imperial';
         } else {
-            isCelcius = true;
+            unit = 'metric';
         }
         navigator.geolocation.getCurrentPosition(
             geoSuccess,
             geoError,
             geoOptions
         );
-        return isCelcius;
     }
 
-    // searchBtn.addEventListener('click', getData(city, unit, unitIcon))
-
-    // function getData(lat, lon, isCelcius) {}
+    unitBtn.addEventListener(
+        'click',
+        () => {
+            changeUnit(unit);
+        },
+        false
+    );
 
     navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 })();

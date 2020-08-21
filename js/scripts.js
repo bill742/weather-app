@@ -1,43 +1,11 @@
-// Validate search box
-// function getCity(){
-//   const city = document.getElementById('search').value;
-//   if (city === ''){
-//     document.getElementById('dataBox').innerHTML = '<p class="unit-text">Please search for a city!</p>';
-//     document.getElementById('unitBtn').style.display = 'none';
-//   } else {
-//     getCityData();
-//   }
-// }
-// Allow search to work by pressing Enter
-// document.getElementById('search').onkeypress = function(event){
-//   if (event.keyCode == 13 || event.which == 13){
-//     getCity();
-//   }
-// };
-"use strict";
 "use strict";
 
 (function () {
   // TODO: decalre variables with types
-  var element = document.querySelector('.data'); // this.element = element;
-
-  var searchBtn = document.querySelector('.search-btn');
-  var unit;
-  var unitIcon;
-  var unitBtnText;
+  var unit = 'metric';
+  var unitIcon = '°C';
+  var unitBtnText = 'View in Fahrenheit';
   var unitBtn = document.querySelector('.unit-btn');
-  var isCelcius = true;
-
-  if (isCelcius === true) {
-    unit = 'metric';
-    unitIcon = '°C';
-    unitBtnText = 'Fahrenheit';
-  } else {
-    unitIcon = '°F';
-    unit = 'imperial';
-    unitBtnText = 'Celcius';
-  }
-
   var geoOptions = {
     enableHighAccuracy: true,
     timeout: 5000,
@@ -47,11 +15,19 @@
   function geoSuccess(pos) {
     var crd = pos.coords;
     var lat = "".concat(crd.latitude);
-    var lon = "".concat(crd.longitude); // getData(lat, lon, isCelcius);
-
+    var lon = "".concat(crd.longitude);
     var output = '';
-    var dataBox = document.getElementById('dataBox'); // TODO: add loading animation
+    var dataBox = document.getElementById('dataBox');
+
+    if (unit === 'metric') {
+      unitIcon = '°C';
+      unitBtnText = 'View in Fahrenheit';
+    } else {
+      unitIcon = '°F';
+      unitBtnText = 'View in Celcius';
+    } // TODO: add loading animation
     // TODO: fetch data with async/await?
+
 
     setTimeout(function () {
       fetch("https://api.openweathermap.org/data/2.5/onecall?lat=".concat(lat, "&lon=").concat(lon, "&units=").concat(unit, "&id=524901&APPID=b32c84201db94b92ed42d393cac6526b")).then(function (response) {
@@ -65,8 +41,8 @@
         output += "<p class=\"unit-text\">".concat(json.current.weather[0].main, "</p>");
         output += "<p id=\"unitText\" class=\"unit-text\">Current Temperature: ".concat(splitTemp, " ").concat(unitIcon, "</p>");
         output += "<p class=\"unit-text\">Feels like: ".concat(splitFeel, " ").concat(unitIcon, "</p>");
-        dataBox.innerHTML = output; // const unitVal = isCelcius;
-
+        dataBox.innerHTML = output;
+        unitBtn.innerHTML = unitBtnText;
         var code = json.current.weather[0].id;
         getImages(code);
       });
@@ -78,23 +54,19 @@
     document.getElementById('dataBox').innerHTML = '<p>Location not available. Please search for a location.</p>';
   }
 
-  unitBtn.addEventListener('click', function () {
-    changeUnit(isCelcius);
-  }, false);
-
-  function changeUnit(unitVal) {
-    if (unitVal === true) {
-      isCelcius = false;
+  function changeUnit(u) {
+    if (u === 'metric') {
+      unit = 'imperial';
     } else {
-      isCelcius = true;
+      unit = 'metric';
     }
 
     navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
-    return isCelcius;
-  } // searchBtn.addEventListener('click', getData(city, unit, unitIcon))
-  // function getData(lat, lon, isCelcius) {}
+  }
 
-
+  unitBtn.addEventListener('click', function () {
+    changeUnit(unit);
+  }, false);
   navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
 })();
 "use strict";
@@ -141,3 +113,27 @@ function getImages(code) {
 
   document.body.style.backgroundImage = bgUrl;
 }
+"use strict";
+
+// Validate search box
+var searchBtn = document.querySelector('.search-btn');
+
+function getCity(unit, unitIcon) {
+  var city = document.getElementById('search').value;
+
+  if (city === '') {//     document.getElementById('dataBox').innerHTML = '<p class="unit-text">Please search for a city!</p>';
+    //     document.getElementById('unitBtn').style.display = 'none';
+    //   } else {
+    //     getCityData();
+    //   }
+  } // Allow search to work by pressing Enter
+  // document.getElementById('search').onkeypress = function(event){
+  //   if (event.keyCode == 13 || event.which == 13){
+  //     getCity();
+  //   }
+
+}
+
+searchBtn.addEventListener('click', function () {
+  getCity(unit, unitIcon);
+}, false);
