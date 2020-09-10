@@ -6,4 +6,5 @@ module.exports = {
         'prettier/prettier': 'error',
         'no-unused-vars': 'warn',
     },
+    sourceType: 'module',
 };
