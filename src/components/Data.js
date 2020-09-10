@@ -1,17 +1,20 @@
 import axios from 'axios';
 
 const Data = () => {
+    const dataBox = document.getElementById('dataBox');
+    const spinner = document.getElementById('spinner');
+    const unitBtn = document.querySelector('.unit-btn');
+    spinner.classList.remove('hidden');
+    unitBtn.classList.add('hidden');
+
     let unit = 'metric';
     let unitIcon = '°C';
     let unitBtnText = 'View in Fahrenheit';
-    const unitBtn = document.querySelector('.unit-btn');
 
     async function geoSuccess(pos) {
         const crd = pos.coords;
         const lat = `${crd.latitude}`;
         const lon = `${crd.longitude}`;
-        const dataBox = document.getElementById('dataBox');
-        let output = '';
 
         if (unit === 'metric') {
             unitIcon = '°C';
@@ -20,8 +23,6 @@ const Data = () => {
             unitIcon = '°F';
             unitBtnText = 'View in Celcius';
         }
-
-        // TODO: add loading animation
 
         const res = await axios.get(
             `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${unit}&id=524901&APPID=b32c84201db94b92ed42d393cac6526b`
@@ -45,6 +46,8 @@ const Data = () => {
             <p class="unit-text">Feels like: ${splitFeel} ${unitIcon}</p>
         `;
 
+        spinner.classList.add('hidden');
+        unitBtn.classList.remove('hidden');
         dataBox.innerHTML = template;
         unitBtn.innerHTML = unitBtnText;
     }
@@ -55,6 +58,9 @@ const Data = () => {
         } else {
             unit = 'metric';
         }
+        dataBox.innerHTML = '';
+        unitBtn.classList.add('hidden');
+        spinner.classList.remove('hidden');
         navigator.geolocation.getCurrentPosition(
             geoSuccess,
             geoError,
