@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Weather App</title>
+        <link
+            href="https://fonts.googleapis.com/css?family=Galada|Lato"
+            rel="stylesheet"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            href="favicon-32x32.png"
+            sizes="32x32"
+        />
+        <link
+            rel="icon"
+            type="image/png"
+            href="favicon-16x16.png"
+            sizes="16x16"
+        />
+    </head>
+    <body>
+        <div class="container">
+            <div id="header"></div>
+            <div id="search"></div>
+
+            <section class="content">
+                <div class="data" id="dataBox"></div>
+                <button
+                    id="unitBtn"
+                    class="unit-btn"
+                    name="units"
+                    value="Switch to Imperial"
+                ></button>
+            </section>
+        </div>
+
+        <script src="../src/app.js" defer="defer"></script>
+    </body>
+</html>
