@@ -48,3 +48,4 @@ Thumbs.db
 /development
 /.cache
 /dist
+.env
