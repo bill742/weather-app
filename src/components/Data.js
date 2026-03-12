@@ -2,6 +2,12 @@
  * WeatherWidget - Modern class-based weather display component
  * Handles geolocation, weather API fetching, and temperature unit toggling
  */
+
+import {
+    displayWeatherByGeoLocation,
+    displayWeatherSearchResults,
+} from '../utils/fetchAndDisplayWeather';
+
 class WeatherWidget {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -17,7 +23,17 @@ class WeatherWidget {
 
         try {
             const position = await this.getGeolocation();
-            await this.fetchAndDisplayWeather(position.coords);
+            if (this.abortController) this.abortController.abort();
+            this.abortController = new AbortController();
+            const data = await displayWeatherByGeoLocation(
+                position.coords,
+                this.unit,
+                this.abortController.signal,
+            );
+            if (data) {
+                this.render(this.getWeatherTemplate(data));
+                this.attachEventListeners();
+            }
         } catch (error) {
             this.handleError(error);
         }
@@ -35,40 +51,6 @@ class WeatherWidget {
                 maximumAge: 0,
             });
         });
-    }
-
-    /**
-     * Fetch weather data from OpenWeatherMap API and display it
-     * @param {GeolocationCoordinates} coords - User's coordinates
-     */
-    async fetchAndDisplayWeather(coords) {
-        // Cancel previous request if exists
-        if (this.abortController) {
-            this.abortController.abort();
-        }
-        this.abortController = new AbortController();
-
-        try {
-            const apiKey = process.env.OPENWEATHER_API_KEY;
-            const { latitude: lat, longitude: lon } = coords;
-
-            const response = await fetch(
-                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${this.unit}&appid=${apiKey}`,
-                { signal: this.abortController.signal },
-            );
-
-            if (!response.ok) {
-                throw new Error(`Weather API error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            this.render(this.getWeatherTemplate(data));
-            this.attachEventListeners();
-        } catch (error) {
-            if (error.name !== 'AbortError') {
-                throw error;
-            }
-        }
     }
 
     /**
@@ -94,6 +76,9 @@ class WeatherWidget {
             this.unit === 'metric' ? 'View in Fahrenheit' : 'View in Celsius';
 
         return `
+            <h2 class="current-conditions">Current conditions in ${
+                data.name
+            }</h2>
             <i class="owf owf-${id}" aria-hidden="true"></i>
             <p class="unit-text">${this.escapeHtml(main)}</p>
             <p class="unit-text">Current Temperature: ${Math.round(
@@ -124,6 +109,28 @@ class WeatherWidget {
     }
 
     /**
+     * Search weather by city name
+     */
+    async search(query) {
+        this.render(this.getSpinner());
+        if (this.abortController) this.abortController.abort();
+        this.abortController = new AbortController();
+        try {
+            const data = await displayWeatherSearchResults(
+                query,
+                this.unit,
+                this.abortController.signal,
+            );
+            if (data) {
+                this.render(this.getWeatherTemplate(data));
+                this.attachEventListeners();
+            }
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    /**
      * Toggle between metric and imperial units
      */
     async toggleUnit() {
@@ -131,7 +138,17 @@ class WeatherWidget {
 
         try {
             const position = await this.getGeolocation();
-            await this.fetchAndDisplayWeather(position.coords);
+            if (this.abortController) this.abortController.abort();
+            this.abortController = new AbortController();
+            const data = await displayWeatherByGeoLocation(
+                position.coords,
+                this.unit,
+                this.abortController.signal,
+            );
+            if (data) {
+                this.render(this.getWeatherTemplate(data));
+                this.attachEventListeners();
+            }
         } catch (error) {
             this.handleError(error);
         }
@@ -163,15 +180,21 @@ class WeatherWidget {
     handleError(error) {
         console.error('Weather widget error:', error);
 
-        let message = 'Unable to load weather data. Please try again.';
+        let message = '';
 
-        if (error.code === 1) {
-            message =
-                'Location permission denied. Please enable location access.';
-        } else if (error.code === 2) {
-            message = 'Location information is unavailable.';
-        } else if (error.code === 3) {
-            message = 'Location request timed out. Please try again.';
+        switch (error.code) {
+            case 1:
+                message =
+                    'Location permission denied. Please enable location access.';
+                break;
+            case 2:
+                message = 'Location information is unavailable.';
+                break;
+            case 3:
+                message = 'Location request timed out. Please try again.';
+                break;
+            default:
+                message = 'Unable to load weather data. Please try again.';
         }
 
         this.render(`<p class="error-text">${message}</p>`);

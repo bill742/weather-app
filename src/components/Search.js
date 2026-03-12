@@ -1,21 +1,22 @@
 const Search = () => {
     const template = `
-        <div class="search-container">
+        <form class="search-container" method="get" action="">
             <input
                 type="text"
                 name="search"
-                id="search"
+                id="search-input"
                 class="search"
                 value=""
                 placeholder="Enter a city"
+                required
             />
             <input
-                type="button"
+                type="submit"
                 name="submit"
                 value="Search"
                 class="search-btn"
             />
-        </div>
+        </form>
     `;
 
     return template;

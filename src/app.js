@@ -7,10 +7,22 @@ import './sass/app.sass';
 
 const app = () => {
     document.getElementById('header').innerHTML = Header();
-    document.getElementById('search').innerHTML = Search();
+
+    const searchContainer = document.getElementById('search');
+    searchContainer.innerHTML = Search();
 
     const weatherWidget = new WeatherWidget('dataBox');
     weatherWidget.init();
+
+    searchContainer
+        .querySelector('.search-container')
+        .addEventListener('submit', (e) => {
+            e.preventDefault();
+            const query = searchContainer
+                .querySelector('#search-input')
+                .value.trim();
+            if (query) weatherWidget.search(query);
+        });
 };
 
 app();
