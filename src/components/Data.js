@@ -1,89 +1,193 @@
-import axios from 'axios';
+/**
+ * WeatherWidget - Modern class-based weather display component
+ * Handles geolocation, weather API fetching, and temperature unit toggling
+ */
+class WeatherWidget {
+    constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.unit = 'metric';
+        this.abortController = null;
+    }
 
-const Data = () => {
-    const template = '';
-    const spinner = `<div id="spinner" class='sk-chase'>
-        <div class="sk-chase-dot"></div>
-        <div class="sk-chase-dot"></div>
-        <div class="sk-chase-dot"></div>
-        <div class="sk-chase-dot"></div>
-        <div class="sk-chase-dot"></div>
-        <div class="sk-chase-dot"></div>
-    </div>`;
-    let unit = 'metric';
-    let unitIcon = '°C';
-    let unitBtnText = 'View in Fahrenheit';
+    /**
+     * Initialize the widget and fetch weather data
+     */
+    async init() {
+        this.render(this.getSpinner());
 
-    async function geoSuccess(pos) {
-        document.getElementById('dataBox').innerHTML = spinner;
-        const crd = pos.coords;
-        const lat = `${crd.latitude}`;
-        const lon = `${crd.longitude}`;
+        try {
+            const position = await this.getGeolocation();
+            await this.fetchAndDisplayWeather(position.coords);
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
 
-        if (unit === 'metric') {
-            unitIcon = '°C';
-            unitBtnText = 'View in Fahrenheit';
-        } else {
-            unitIcon = '°F';
-            unitBtnText = 'View in Celcius';
+    /**
+     * Promisified geolocation API
+     * @returns {Promise<GeolocationPosition>}
+     */
+    getGeolocation() {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 0,
+            });
+        });
+    }
+
+    /**
+     * Fetch weather data from OpenWeatherMap API and display it
+     * @param {GeolocationCoordinates} coords - User's coordinates
+     */
+    async fetchAndDisplayWeather(coords) {
+        // Cancel previous request if exists
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+        this.abortController = new AbortController();
+
+        try {
+            const apiKey = process.env.OPENWEATHER_API_KEY;
+            const { latitude: lat, longitude: lon } = coords;
+
+            const response = await fetch(
+                `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${this.unit}&appid=${apiKey}`,
+                { signal: this.abortController.signal },
+            );
+
+            if (!response.ok) {
+                throw new Error(`Weather API error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            this.render(this.getWeatherTemplate(data));
+            this.attachEventListeners();
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                throw error;
+            }
+        }
+    }
+
+    /**
+     * Generate loading spinner HTML
+     * @returns {string} Spinner HTML
+     */
+    getSpinner() {
+        return `<div id="spinner" class="sk-chase">
+            ${Array(6).fill('<div class="sk-chase-dot"></div>').join('')}
+        </div>`;
+    }
+
+    /**
+     * Generate weather display template
+     * @param {Object} data - Weather API response data
+     * @returns {string} Weather HTML template
+     */
+    getWeatherTemplate(data) {
+        const { temp, feels_like } = data.main;
+        const { main, id } = data.weather[0];
+        const unitIcon = this.unit === 'metric' ? '°C' : '°F';
+        const unitBtnText =
+            this.unit === 'metric' ? 'View in Fahrenheit' : 'View in Celsius';
+
+        return `
+            <i class="owf owf-${id}" aria-hidden="true"></i>
+            <p class="unit-text">${this.escapeHtml(main)}</p>
+            <p class="unit-text">Current Temperature: ${Math.round(
+                temp,
+            )} ${unitIcon}</p>
+            <p class="unit-text">Feels like: ${Math.round(
+                feels_like,
+            )} ${unitIcon}</p>
+            <button id="unitBtn" class="unit-btn" type="button">
+                ${unitBtnText}
+            </button>
+        `;
+    }
+
+    /**
+     * Attach event listeners to the unit toggle button
+     * Prevents memory leaks by replacing the button element
+     */
+    attachEventListeners() {
+        const btn = this.container.querySelector('#unitBtn');
+        if (btn) {
+            // Remove old listener by replacing the element
+            const newBtn = btn.cloneNode(true);
+            btn.replaceWith(newBtn);
+
+            newBtn.addEventListener('click', () => this.toggleUnit());
+        }
+    }
+
+    /**
+     * Toggle between metric and imperial units
+     */
+    async toggleUnit() {
+        this.unit = this.unit === 'metric' ? 'imperial' : 'metric';
+
+        try {
+            const position = await this.getGeolocation();
+            await this.fetchAndDisplayWeather(position.coords);
+        } catch (error) {
+            this.handleError(error);
+        }
+    }
+
+    /**
+     * Render HTML content to the container
+     * @param {string} html - HTML content to render
+     */
+    render(html) {
+        this.container.innerHTML = html;
+    }
+
+    /**
+     * Escape HTML to prevent XSS attacks
+     * @param {string} str - String to escape
+     * @returns {string} Escaped string
+     */
+    escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    /**
+     * Handle errors with user-friendly messages
+     * @param {Error} error - Error object
+     */
+    handleError(error) {
+        console.error('Weather widget error:', error);
+
+        let message = 'Unable to load weather data. Please try again.';
+
+        if (error.code === 1) {
+            message =
+                'Location permission denied. Please enable location access.';
+        } else if (error.code === 2) {
+            message = 'Location information is unavailable.';
+        } else if (error.code === 3) {
+            message = 'Location request timed out. Please try again.';
         }
 
-        const res = await axios.get(
-            `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=${unit}&id=524901&APPID=b32c84201db94b92ed42d393cac6526b`
-        );
-
-        const splitTemp = JSON.stringify(res.data.current.temp).split(
-            '.',
-            1
-        )[0];
-        const splitFeel = JSON.stringify(res.data.current.feels_like).split(
-            '.',
-            1
-        )[0];
-
-        const template = `<i class="owf owf-${res.data.current.weather[0].id}"></i>
-        <p class="unit-text">${res.data.current.weather[0].main}</p>
-        <p id="unitText" class="unit-text">Current Temperature: ${splitTemp} ${unitIcon}</p>
-        <p class="unit-text">Feels like: ${splitFeel} ${unitIcon}</p>
-
-        <button
-            id="unitBtn"
-            class="unit-btn"
-            name="units"
-            value=${unitBtnText}
-        >${unitBtnText}</button>`;
-
-        document.getElementById('dataBox').innerHTML = template;
-
-        document.getElementById('unitBtn').addEventListener(
-            'click',
-            () => {
-                unit = unit === 'metric' ? 'imperial' : 'metric';
-                navigator.geolocation.getCurrentPosition(
-                    geoSuccess,
-                    geoError,
-                    geoOptions
-                );
-            },
-            false
-        );
+        this.render(`<p class="error-text">${message}</p>`);
     }
 
-    function geoError(err) {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-        document.getElementById('dataBox').innerHTML =
-            '<p>Location not available. Please search for a location.</p>';
+    /**
+     * Clean up resources and event listeners
+     */
+    destroy() {
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
     }
+}
 
-    const geoOptions = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-    };
-
-    navigator.geolocation.getCurrentPosition(geoSuccess, geoError, geoOptions);
-
-    return template;
-};
-
-export default Data;
+export default WeatherWidget;
