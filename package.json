@@ -4,7 +4,8 @@
     "description": "App to display users local weather",
     "scripts": {
         "dev": "rm -rf ./development && rm -rf ./.cache && parcel public/index.html --dist-dir development --port 3000",
-        "build": "parcel build public/index.html --dist-dir dist --public-url ./"
+        "build": "parcel build public/index.html --dist-dir dist --public-url ./",
+        "lint": "eslint"
     },
     "repository": {
         "type": "git",
