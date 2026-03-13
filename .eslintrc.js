@@ -1,37 +1,10 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "es6": true
+    env: { browser: true },
+    extends: ['airbnb', 'prettier', 'plugin:node/recommended'],
+    plugins: ['prettier'],
+    rules: {
+        'prettier/prettier': 'error',
+        'no-unused-vars': 'warn',
     },
-    "extends": "airbnb-base",
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
-    },
-    "parserOptions": {
-        "ecmaVersion": 2018
-    },
-    "rules": {
-        "eol-last": [
-            "error",
-            "always"
-        ],
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
-        "no-console":0,
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
-    }
+    sourceType: 'module',
 };
