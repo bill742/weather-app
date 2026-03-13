@@ -13,6 +13,7 @@ class WeatherWidget {
         this.container = document.getElementById(containerId);
         this.unit = 'metric';
         this.abortController = null;
+        this.dataType = 'geolocation';
     }
 
     /**
@@ -115,6 +116,8 @@ class WeatherWidget {
         this.render(this.getSpinner());
         if (this.abortController) this.abortController.abort();
         this.abortController = new AbortController();
+        this.dataType = 'search';
+
         try {
             const data = await displayWeatherSearchResults(
                 query,
@@ -140,11 +143,20 @@ class WeatherWidget {
             const position = await this.getGeolocation();
             if (this.abortController) this.abortController.abort();
             this.abortController = new AbortController();
-            const data = await displayWeatherByGeoLocation(
-                position.coords,
-                this.unit,
-                this.abortController.signal,
-            );
+            const query = document
+                .getElementById('search')
+                .querySelector('#search-input')
+                .value.trim();
+
+            const data =
+                this.dataType === 'geolocation'
+                    ? await displayWeatherByGeoLocation(
+                          position.coords,
+                          this.unit,
+                          this.abortController.signal,
+                      )
+                    : await displayWeatherSearchResults(query, this.unit);
+
             if (data) {
                 this.render(this.getWeatherTemplate(data));
                 this.attachEventListeners();
