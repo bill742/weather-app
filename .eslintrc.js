@@ -1,29 +1,10 @@
 module.exports = {
-    "env": {
-        "browser": true,
-        "commonjs": true,
-        "jquery": true
+    env: { browser: true },
+    extends: ['airbnb', 'prettier', 'plugin:node/recommended'],
+    plugins: ['prettier'],
+    rules: {
+        'prettier/prettier': 'error',
+        'no-unused-vars': 'warn',
     },
-    "extends": "eslint:recommended",
-    "rules": {
-        "eol-last": ["error", "always"],
-        "indent": [
-            "error",
-            2
-        ],
-        "linebreak-style": [
-            "error",
-            // "windows",
-            "unix"
-        ],
-        "no-console":0,
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "always"
-        ]
-    }
+    sourceType: 'module',
 };

@@ -1,0 +1,21 @@
+// Variables
+$primary: #58a4b0
+$secondary: #a9bcd0
+$white: #fff
+$black: #1b1b1e
+$black-transparent: rgba(0, 0, 0, .7)
+$grey: #d8dbe2
+
+// Mixins
+@mixin btn
+  padding: 10px 15px
+  background-color: $primary
+  border: 2px solid $white
+  border-radius: 10px
+  color: $white
+  cursor: pointer
+  font-size: 1.5em
+
+  &:hover
+    color: $black
+    background-color: $secondary
