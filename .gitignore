@@ -50,3 +50,6 @@ Thumbs.db
 /dist
 .env
 .parcel-cache
+
+# Backup software file
+.sync.ffs_db
