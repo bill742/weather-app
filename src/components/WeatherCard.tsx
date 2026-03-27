@@ -95,8 +95,6 @@ const WeatherCard = ({ searchQuery }: Props) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    console.log(data);
-
     // Search query changes
     useEffect(() => {
         if (!searchQuery) return;
@@ -203,5 +201,7 @@ const WeatherCard = ({ searchQuery }: Props) => {
         </div>
     );
 };
+
+WeatherCard.displayName = 'WeatherCard';
 
 export default WeatherCard;

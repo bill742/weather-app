@@ -34,4 +34,6 @@ const Search = ({ onSubmit }: Props) => {
     );
 };
 
+Search.displayName = 'Search';
+
 export default Search;
