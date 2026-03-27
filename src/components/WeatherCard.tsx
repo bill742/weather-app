@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { FaMoon, FaSun } from 'react-icons/fa';
 
 import type {
@@ -24,6 +24,52 @@ interface Props {
     searchQuery: string | null;
 }
 
+type State = {
+    data: WeatherData | null;
+    dataSource: DataSource;
+    error: string | null;
+    geo: GeoLocation | null;
+    loading: boolean;
+    unit: Unit;
+};
+
+type Action =
+    | { type: 'FETCH_DONE' }
+    | { type: 'FETCH_ERROR'; payload: string }
+    | { type: 'FETCH_START' }
+    | { type: 'FETCH_SUCCESS'; payload: WeatherData }
+    | { type: 'SET_DATA_SOURCE'; payload: DataSource }
+    | { type: 'SET_GEO'; payload: GeoLocation | null }
+    | { type: 'SET_UNIT'; payload: Unit };
+
+const initialState: State = {
+    data: null,
+    dataSource: 'geolocation',
+    error: null,
+    geo: null,
+    loading: true,
+    unit: 'metric',
+};
+
+function reducer(state: State, action: Action): State {
+    switch (action.type) {
+        case 'FETCH_DONE':
+            return { ...state, loading: false };
+        case 'FETCH_ERROR':
+            return { ...state, error: action.payload, loading: false };
+        case 'FETCH_START':
+            return { ...state, error: null, loading: true };
+        case 'FETCH_SUCCESS':
+            return { ...state, data: action.payload, loading: false };
+        case 'SET_DATA_SOURCE':
+            return { ...state, dataSource: action.payload };
+        case 'SET_GEO':
+            return { ...state, geo: action.payload };
+        case 'SET_UNIT':
+            return { ...state, unit: action.payload };
+    }
+}
+
 const getErrorMessage = (error: unknown): string => {
     if (error instanceof GeolocationPositionError) {
         switch (error.code) {
@@ -39,12 +85,8 @@ const getErrorMessage = (error: unknown): string => {
 };
 
 const WeatherCard = ({ searchQuery }: Props) => {
-    const [data, setData] = useState<WeatherData | null>(null);
-    const [geo, setGeo] = useState<GeoLocation | null>(null);
-    const [dataSource, setDataSource] = useState<DataSource>('geolocation');
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [unit, setUnit] = useState<Unit>('metric');
+    const [state, dispatch] = useReducer(reducer, initialState);
+    const { data, dataSource, error, geo, loading, unit } = state;
     const abortControllerRef = useRef<AbortController | null>(null);
     const coordsRef = useRef<GeolocationCoordinates | null>(null);
 
@@ -52,16 +94,14 @@ const WeatherCard = ({ searchQuery }: Props) => {
         abortControllerRef.current?.abort();
         abortControllerRef.current = new AbortController();
 
-        setLoading(true);
-        setError(null);
+        dispatch({ type: 'FETCH_START' });
 
         try {
             const result = await fetcher(abortControllerRef.current.signal);
-            if (result) setData(result);
+            if (result) dispatch({ payload: result, type: 'FETCH_SUCCESS' });
+            else dispatch({ type: 'FETCH_DONE' });
         } catch (err) {
-            setError(getErrorMessage(err));
-        } finally {
-            setLoading(false);
+            dispatch({ payload: getErrorMessage(err), type: 'FETCH_ERROR' });
         }
     }, []);
 
@@ -80,10 +120,13 @@ const WeatherCard = ({ searchQuery }: Props) => {
                         new AbortController().signal,
                     ),
                 ]);
-                if (geoResult) setGeo(geoResult);
+                if (geoResult)
+                    dispatch({ payload: geoResult, type: 'SET_GEO' });
             } catch (err) {
-                setError(getErrorMessage(err));
-                setLoading(false);
+                dispatch({
+                    payload: getErrorMessage(err),
+                    type: 'FETCH_ERROR',
+                });
             }
         };
 
@@ -98,21 +141,21 @@ const WeatherCard = ({ searchQuery }: Props) => {
     // Search query changes
     useEffect(() => {
         if (!searchQuery) return;
-        setDataSource('search');
+        dispatch({ payload: 'search', type: 'SET_DATA_SOURCE' });
         void Promise.all([
             fetchAndSet((signal) =>
                 fetchWeatherByCity(searchQuery, unit, signal),
             ),
             fetchGeoByCity(searchQuery, new AbortController().signal),
         ]).then(([, geoResult]) => {
-            setGeo(geoResult ?? null);
+            dispatch({ payload: geoResult ?? null, type: 'SET_GEO' });
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery]);
 
     const toggleUnit = useCallback(() => {
         const newUnit: Unit = unit === 'metric' ? 'imperial' : 'metric';
-        setUnit(newUnit);
+        dispatch({ payload: newUnit, type: 'SET_UNIT' });
 
         if (dataSource === 'geolocation' && coordsRef.current) {
             fetchAndSet((signal) =>
