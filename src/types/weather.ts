@@ -1,7 +1,9 @@
 export interface GeoLocation {
+    country: string;
+    lat: number;
+    lon: number;
     name: string;
     state?: string;
-    country: string;
 }
 
 export interface WeatherData {
