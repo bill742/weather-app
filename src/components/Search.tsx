@@ -26,6 +26,13 @@ const Search = ({ onSubmit }: Props) => {
             />
             <button
                 className="cursor-pointer rounded-xl border border-white/30 bg-white/20 px-5 py-3 font-medium text-white backdrop-blur-sm transition hover:bg-white/30 active:scale-95"
+                type="button"
+                onClick={() => setQuery('')}
+            >
+                X
+            </button>
+            <button
+                className="cursor-pointer rounded-xl border border-white/30 bg-white/20 px-5 py-3 font-medium text-white backdrop-blur-sm transition hover:bg-white/30 active:scale-95"
                 type="submit"
             >
                 Search
