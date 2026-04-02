@@ -59,14 +59,23 @@ export const fetchGeoByCoords = async (
 export const fetchGeoByCity = async (
     q: string,
     signal: AbortSignal,
-): Promise<GeoLocation | undefined> => {
+): Promise<GeoLocation[]> => {
     try {
-        const url = `${geoUrl}/direct?q=${encodeURIComponent(q)}&limit=1&appid=${apiKey}`;
+        const url = `${geoUrl}/direct?q=${encodeURIComponent(q)}&limit=5&appid=${apiKey}`;
         const response = await fetch(url, { signal });
-        if (!response.ok) return undefined;
-        const results = (await response.json()) as GeoLocation[];
-        return results[0];
+        if (!response.ok) return [];
+        return (await response.json()) as GeoLocation[];
     } catch {
-        return undefined;
+        return [];
     }
+};
+
+export const fetchWeatherByLatLon = (
+    lat: number,
+    lon: number,
+    unit: Unit,
+    signal: AbortSignal,
+): Promise<WeatherData | undefined> => {
+    const url = `${apiUrl}?lat=${lat}&lon=${lon}&units=${unit}&appid=${apiKey}`;
+    return fetchWeather(url, signal);
 };

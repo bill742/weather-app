@@ -10,11 +10,12 @@ import type {
 import {
     fetchGeoByCity,
     fetchGeoByCoords,
-    fetchWeatherByCity,
     fetchWeatherByCoords,
+    fetchWeatherByLatLon,
 } from '../utils/fetchWeather';
 import formatTime from '../utils/formatTime';
 import getGeolocation from '../utils/getGeolocation';
+import CityPicker from './CityPicker';
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
 
@@ -25,6 +26,7 @@ interface Props {
 }
 
 type State = {
+    candidates: GeoLocation[];
     data: WeatherData | null;
     dataSource: DataSource;
     error: string | null;
@@ -38,11 +40,13 @@ type Action =
     | { type: 'FETCH_ERROR'; payload: string }
     | { type: 'FETCH_START' }
     | { type: 'FETCH_SUCCESS'; payload: WeatherData }
+    | { type: 'SET_CANDIDATES'; payload: GeoLocation[] }
     | { type: 'SET_DATA_SOURCE'; payload: DataSource }
     | { type: 'SET_GEO'; payload: GeoLocation | null }
     | { type: 'SET_UNIT'; payload: Unit };
 
 const initialState: State = {
+    candidates: [],
     data: null,
     dataSource: 'geolocation',
     error: null,
@@ -61,6 +65,8 @@ function reducer(state: State, action: Action): State {
             return { ...state, error: null, loading: true };
         case 'FETCH_SUCCESS':
             return { ...state, data: action.payload, loading: false };
+        case 'SET_CANDIDATES':
+            return { ...state, candidates: action.payload };
         case 'SET_DATA_SOURCE':
             return { ...state, dataSource: action.payload };
         case 'SET_GEO':
@@ -86,9 +92,10 @@ const getErrorMessage = (error: unknown): string => {
 
 const WeatherCard = ({ searchQuery }: Props) => {
     const [state, dispatch] = useReducer(reducer, initialState);
-    const { data, dataSource, error, geo, loading, unit } = state;
+    const { candidates, data, dataSource, error, geo, loading, unit } = state;
     const abortControllerRef = useRef<AbortController | null>(null);
     const coordsRef = useRef<GeolocationCoordinates | null>(null);
+    const selectedCoordsRef = useRef<{ lat: number; lon: number } | null>(null);
 
     const fetchAndSet = useCallback(async (fetcher: WeatherFetcher) => {
         abortControllerRef.current?.abort();
@@ -142,16 +149,45 @@ const WeatherCard = ({ searchQuery }: Props) => {
     useEffect(() => {
         if (!searchQuery) return;
         dispatch({ payload: 'search', type: 'SET_DATA_SOURCE' });
-        void Promise.all([
-            fetchAndSet((signal) =>
-                fetchWeatherByCity(searchQuery, unit, signal),
-            ),
-            fetchGeoByCity(searchQuery, new AbortController().signal),
-        ]).then(([, geoResult]) => {
-            dispatch({ payload: geoResult ?? null, type: 'SET_GEO' });
+        dispatch({ payload: [], type: 'SET_CANDIDATES' });
+        dispatch({ type: 'FETCH_START' });
+
+        const controller = new AbortController();
+
+        void fetchGeoByCity(searchQuery, controller.signal).then((results) => {
+            if (results.length === 0) {
+                dispatch({
+                    payload: 'City not found.',
+                    type: 'FETCH_ERROR',
+                });
+            } else if (results.length === 1) {
+                const [city] = results;
+                selectedCoordsRef.current = { lat: city.lat, lon: city.lon };
+                dispatch({ payload: city, type: 'SET_GEO' });
+                void fetchAndSet((signal) =>
+                    fetchWeatherByLatLon(city.lat, city.lon, unit, signal),
+                );
+            } else {
+                dispatch({ payload: results, type: 'SET_CANDIDATES' });
+                dispatch({ type: 'FETCH_DONE' });
+            }
         });
+
+        return () => controller.abort();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery]);
+
+    const handleCandidateSelect = useCallback(
+        (city: GeoLocation) => {
+            selectedCoordsRef.current = { lat: city.lat, lon: city.lon };
+            dispatch({ payload: [], type: 'SET_CANDIDATES' });
+            dispatch({ payload: city, type: 'SET_GEO' });
+            void fetchAndSet((signal) =>
+                fetchWeatherByLatLon(city.lat, city.lon, unit, signal),
+            );
+        },
+        [fetchAndSet, unit],
+    );
 
     const toggleUnit = useCallback(() => {
         const newUnit: Unit = unit === 'metric' ? 'imperial' : 'metric';
@@ -161,12 +197,13 @@ const WeatherCard = ({ searchQuery }: Props) => {
             fetchAndSet((signal) =>
                 fetchWeatherByCoords(coordsRef.current!, newUnit, signal),
             );
-        } else if (dataSource === 'search' && searchQuery) {
+        } else if (dataSource === 'search' && selectedCoordsRef.current) {
+            const { lat, lon } = selectedCoordsRef.current;
             fetchAndSet((signal) =>
-                fetchWeatherByCity(searchQuery, newUnit, signal),
+                fetchWeatherByLatLon(lat, lon, newUnit, signal),
             );
         }
-    }, [dataSource, fetchAndSet, searchQuery, unit]);
+    }, [dataSource, fetchAndSet, unit]);
 
     if (loading) {
         return (
@@ -184,6 +221,15 @@ const WeatherCard = ({ searchQuery }: Props) => {
 
     if (error) {
         return <p className="text-center text-sm text-white/80">{error}</p>;
+    }
+
+    if (candidates.length > 0) {
+        return (
+            <CityPicker
+                candidates={candidates}
+                onSelect={handleCandidateSelect}
+            />
+        );
     }
 
     if (!data) return null;
