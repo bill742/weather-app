@@ -157,7 +157,7 @@ const WeatherCard = ({ searchQuery }: Props) => {
         void fetchGeoByCity(searchQuery, controller.signal).then((results) => {
             if (results.length === 0) {
                 dispatch({
-                    payload: 'City not found.',
+                    payload: 'City not found',
                     type: 'FETCH_ERROR',
                 });
             } else if (results.length === 1) {
@@ -220,7 +220,11 @@ const WeatherCard = ({ searchQuery }: Props) => {
     }
 
     if (error) {
-        return <p className="text-center text-sm text-white/80">{error}</p>;
+        return (
+            <p className="text-center text-white/80 text-2xl font-semibold">
+                {error}
+            </p>
+        );
     }
 
     if (candidates.length > 0) {
@@ -234,7 +238,7 @@ const WeatherCard = ({ searchQuery }: Props) => {
 
     if (!data) return null;
 
-    const { feels_like, temp } = data.main;
+    const { feels_like, temp, temp_max, temp_min } = data.main;
     const { id, main } = data.weather[0];
     const { sunrise, sunset } = data.sys;
     const { timezone } = data;
@@ -246,42 +250,54 @@ const WeatherCard = ({ searchQuery }: Props) => {
         unit === 'metric' ? 'View in Fahrenheit' : 'View in Celsius';
 
     return (
-        <div className="flex w-full flex-col items-center gap-1 text-center">
-            <p className="text-sm font-medium tracking-widest text-white/60 uppercase">
-                Current conditions
-            </p>
-            <h2 className="mb-2 text-2xl font-semibold text-white">
-                {locationParts.join(', ')}
-            </h2>
-            <i
-                aria-hidden="true"
-                className={`owf owf-${id} text-8xl text-white`}
-            />
-            <p className="mt-2 text-lg text-white/80">{main}</p>
-            <p className="text-6xl font-bold text-white">
-                {Math.round(temp)}
-                {unitIcon}
-            </p>
-            <p className="text-sm text-white/60">
-                Feels like {Math.round(feels_like)}
-                {unitIcon}
-            </p>
-            <div className="flex flex-row gap-x-2 items-center mt-4">
-                <div className="flex flex-row gap-x-2 items-center">
-                    <FaSun className="text-white" />{' '}
+        <div className="flex w-full flex-col items-center gap-8">
+            <div className="flex w-full flex-col items-center gap-1 text-center">
+                <p className="text-sm font-medium tracking-widest text-white/60 uppercase">
+                    Current conditions
+                </p>
+                <h2 className="mb-2 text-2xl font-semibold text-white">
+                    {locationParts.join(', ')}
+                </h2>
+                <i
+                    aria-hidden="true"
+                    className={`owf owf-${id} text-8xl text-white`}
+                />
+                <p className="mt-2 text-lg text-white/80">{main}</p>
+                <p className="text-6xl font-bold text-white">
+                    {Math.round(temp).toString()}
+                    {unitIcon}
+                </p>
+                <p className="text-sm text-white/60">
+                    Feels like {Math.round(feels_like)}
+                    {unitIcon}
+                </p>
+            </div>
+            <div className="flex flex-row gap-x-6 items-center ">
+                <div className="flex flex-col gap-y-2 items-center">
                     <p className="text-white/80 text-sm">
-                        Sunrise: {formatTime(sunrise, timezone)}
+                        High: {Math.round(temp_max).toString()}
                     </p>
+                    <div className="flex flex-row gap-x-2 items-center">
+                        <FaSun className="text-white" />{' '}
+                        <p className="text-white/80 text-sm">
+                            Sunrise: {formatTime(sunrise, timezone)}
+                        </p>
+                    </div>
                 </div>
-                <div className="flex flex-row gap-x-2 items-center">
-                    <FaMoon className="text-white" />
+                <div className="flex flex-col gap-y-2 items-center">
                     <p className="text-white/80 text-sm">
-                        Sunset: {formatTime(sunset, timezone)}
+                        Low: {Math.round(temp_min).toString()}
                     </p>
+                    <div className="flex flex-row gap-x-2 items-center">
+                        <FaMoon className="text-white" />
+                        <p className="text-white/80 text-sm">
+                            Sunset: {formatTime(sunset, timezone)}
+                        </p>
+                    </div>
                 </div>
             </div>
             <button
-                className="mt-6 cursor-pointer rounded-full border border-white/30 bg-white/15 px-5 py-2 text-sm text-white/80 backdrop-blur-sm transition hover:bg-white/25 hover:text-white active:scale-95"
+                className="cursor-pointer rounded-full border border-white/30 bg-white/15 px-5 py-2 text-sm text-white/80 backdrop-blur-sm transition hover:bg-white/25 hover:text-white active:scale-95"
                 onClick={toggleUnit}
                 type="button"
             >
