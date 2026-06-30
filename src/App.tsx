@@ -9,7 +9,7 @@ const App = () => {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-sky-400 via-blue-500 to-indigo-600 flex flex-col items-center px-4 py-10">
-            <div className="w-full max-w-md">
+            <main className="w-full max-w-md">
                 <Header />
                 <Search onSubmit={setSearchQuery} />
                 <section>
@@ -20,7 +20,7 @@ const App = () => {
                         <WeatherCard searchQuery={searchQuery} />
                     </div>
                 </section>
-            </div>
+            </main>
         </div>
     );
 };
