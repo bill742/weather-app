@@ -28,6 +28,7 @@ const Search = ({ onSubmit }: Props) => {
                     required
                     type="text"
                     value={query}
+                    aria-label="Search for a city"
                 />
                 <button
                     className="cursor-pointer rounded-xl border border-white/30 bg-white/20 px-5 py-3 font-medium text-white backdrop-blur-sm transition hover:bg-white/30 active:scale-95"

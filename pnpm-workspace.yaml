@@ -1,0 +1,6 @@
+# Supply-chain hardening for pnpm.
+# minimumReleaseAge: wait 7 days (in minutes) before installing a newly published
+# version, so malware caught and unpublished within hours never reaches us.
+minimumReleaseAge: 10080
+# trustPolicy: reject updates whose trust signals (provenance/signatures) weaken.
+trustPolicy: no-downgrade
