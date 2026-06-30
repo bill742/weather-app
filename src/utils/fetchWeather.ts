@@ -23,15 +23,6 @@ const fetchWeather = async (
     }
 };
 
-export const fetchWeatherByCity = (
-    q: string,
-    unit: Unit,
-    signal: AbortSignal,
-): Promise<WeatherData | undefined> => {
-    const url = `${apiUrl}?q=${encodeURIComponent(q)}&units=${unit}&appid=${apiKey}`;
-    return fetchWeather(url, signal);
-};
-
 export const fetchWeatherByCoords = (
     coords: GeolocationCoordinates,
     unit: Unit,

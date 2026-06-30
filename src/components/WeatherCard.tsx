@@ -97,6 +97,14 @@ const WeatherCard = ({ searchQuery }: Props) => {
     const coordsRef = useRef<GeolocationCoordinates | null>(null);
     const selectedCoordsRef = useRef<{ lat: number; lon: number } | null>(null);
 
+    // Latest-value ref so the mount/search effects can read the current unit
+    // without making `unit` a reactive dependency (toggling the unit is handled
+    // by toggleUnit, which re-fetches; the effects must not re-run on it).
+    const unitRef = useRef(unit);
+    useEffect(() => {
+        unitRef.current = unit;
+    }, [unit]);
+
     const fetchAndSet = useCallback(async (fetcher: WeatherFetcher) => {
         abortControllerRef.current?.abort();
         abortControllerRef.current = new AbortController();
@@ -120,7 +128,11 @@ const WeatherCard = ({ searchQuery }: Props) => {
                 coordsRef.current = position.coords;
                 const [, geoResult] = await Promise.all([
                     fetchAndSet((signal) =>
-                        fetchWeatherByCoords(position.coords, unit, signal),
+                        fetchWeatherByCoords(
+                            position.coords,
+                            unitRef.current,
+                            signal,
+                        ),
                     ),
                     fetchGeoByCoords(
                         position.coords,
@@ -142,8 +154,7 @@ const WeatherCard = ({ searchQuery }: Props) => {
         return () => {
             abortControllerRef.current?.abort();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [fetchAndSet]);
 
     // Search query changes
     useEffect(() => {
@@ -165,7 +176,12 @@ const WeatherCard = ({ searchQuery }: Props) => {
                 selectedCoordsRef.current = { lat: city.lat, lon: city.lon };
                 dispatch({ payload: city, type: 'SET_GEO' });
                 void fetchAndSet((signal) =>
-                    fetchWeatherByLatLon(city.lat, city.lon, unit, signal),
+                    fetchWeatherByLatLon(
+                        city.lat,
+                        city.lon,
+                        unitRef.current,
+                        signal,
+                    ),
                 );
             } else {
                 dispatch({ payload: results, type: 'SET_CANDIDATES' });
@@ -174,8 +190,7 @@ const WeatherCard = ({ searchQuery }: Props) => {
         });
 
         return () => controller.abort();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchQuery]);
+    }, [searchQuery, fetchAndSet]);
 
     const handleCandidateSelect = useCallback(
         (city: GeoLocation) => {
@@ -207,15 +222,11 @@ const WeatherCard = ({ searchQuery }: Props) => {
 
     if (loading) {
         return (
-            <div
-                aria-label="Loading weather"
-                className="sk-chase"
-                role="status"
-            >
+            <output aria-label="Loading weather" className="sk-chase">
                 {Array.from({ length: 6 }).map((_, i) => (
                     <div className="sk-chase-dot" key={i} />
                 ))}
-            </div>
+            </output>
         );
     }
 
