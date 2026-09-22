@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FiSearch, FiX } from 'react-icons/fi';
 
 interface Props {
     onSubmit: (query: string) => void;
@@ -15,34 +16,39 @@ const Search = ({ onSubmit }: Props) => {
 
     return (
         <form
-            className="mb-6 flex gap-2 flex-col"
+            className="flex items-center gap-3"
             method="get"
             onSubmit={handleSubmit}
+            role="search"
         >
-            <div className="flex flex-row gap-x-2">
+            <div className="relative flex-1">
                 <input
-                    className="flex-1 rounded-xl border border-white/30 bg-white/20 px-4 py-3 text-white placeholder-white/60 backdrop-blur-sm outline-none transition focus:border-white/60 focus:bg-white/25"
+                    aria-label="Search for a city"
+                    className="w-full border-b border-white/25 bg-transparent py-3 pr-9 text-white placeholder-white/55 outline-none transition-colors focus:border-(--accent)"
                     id="search-input"
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Enter a city"
+                    placeholder="Search for a city"
                     required
                     type="text"
                     value={query}
-                    aria-label="Search for a city"
                 />
-                <button
-                    className="cursor-pointer rounded-xl border border-white/30 bg-white/20 px-5 py-3 font-medium text-white backdrop-blur-sm transition hover:bg-white/30 active:scale-95"
-                    type="button"
-                    onClick={() => setQuery('')}
-                >
-                    X
-                </button>
+                {query && (
+                    <button
+                        aria-label="Clear text"
+                        className="absolute top-1/2 right-0 -translate-y-1/2 cursor-pointer rounded-full p-1.5 text-white/60 transition-colors hover:text-white"
+                        onClick={() => setQuery('')}
+                        type="button"
+                    >
+                        <FiX aria-hidden="true" />
+                    </button>
+                )}
             </div>
             <button
-                className="cursor-pointer rounded-xl border border-white/30 bg-white/20 px-5 py-3 font-medium text-white backdrop-blur-sm transition hover:bg-white/30 active:scale-95"
+                aria-label="Search"
+                className="grid size-12 shrink-0 cursor-pointer place-items-center rounded-xl bg-(--accent) text-slate-900 transition active:scale-95"
                 type="submit"
             >
-                Search
+                <FiSearch aria-hidden="true" className="size-5" />
             </button>
         </form>
     );

@@ -2,6 +2,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
+import { mockReverseGeo, mockWeather } from './helpers';
+
 test.describe('Homepage does not have accessibility issues', () => {
     test('Should not have any automatically detectable accessibility issues', async ({
         page,
@@ -14,6 +16,24 @@ test.describe('Homepage does not have accessibility issues', () => {
             page,
         }).analyze();
         expect(accessibilityScanResults.violations).toEqual([]);
+    });
+
+    test('Should not have accessibility issues with a forecast loaded', async ({
+        page,
+    }) => {
+        await mockReverseGeo(page, {
+            country: 'GB',
+            lat: 51.5074,
+            lon: -0.1278,
+            name: 'London',
+        });
+        await mockWeather(page, { metricTemp: 14, name: 'London', uvi: 5 });
+
+        await page.goto('./');
+        await expect(page.getByTestId('current-temp')).toBeVisible();
+
+        const results = await new AxeBuilder({ page }).analyze();
+        expect(results.violations).toEqual([]);
     });
 });
 
