@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import type { GeoLocation } from '../types/weather';
 
@@ -44,20 +44,25 @@ const write = (places: GeoLocation[]) => {
 
 const useRecentCities = () => {
     const [recent, setRecent] = useState(read);
+    // Persisting inside a state updater would write twice, because React may
+    // replay an updater. This mirrors the list instead, so the next one can be
+    // built from the latest value without either callback depending on state.
+    const recentRef = useRef(recent);
 
     const addRecent = useCallback((place: GeoLocation) => {
         const { country, lat, lon, name, state } = place;
-        setRecent((prev) => {
-            const next = [
-                { country, lat, lon, name, state },
-                ...prev.filter((p) => !isSamePlace(p, place)),
-            ].slice(0, MAX_RECENT);
-            write(next);
-            return next;
-        });
+        const next = [
+            { country, lat, lon, name, state },
+            ...recentRef.current.filter((p) => !isSamePlace(p, place)),
+        ].slice(0, MAX_RECENT);
+
+        recentRef.current = next;
+        write(next);
+        setRecent(next);
     }, []);
 
     const clearRecent = useCallback(() => {
+        recentRef.current = [];
         write([]);
         setRecent([]);
     }, []);

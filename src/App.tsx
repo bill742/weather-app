@@ -2,14 +2,12 @@ import { type CSSProperties, useState } from 'react';
 
 import Background from './components/Background';
 import CityPicker from './components/CityPicker';
-import CurrentConditions from './components/CurrentConditions';
-import DailyForecast from './components/DailyForecast';
+import ForecastPanel from './components/ForecastPanel';
 import Header from './components/Header';
-import HourlyForecast from './components/HourlyForecast';
+import Hero from './components/Hero';
 import RecentCities from './components/RecentCities';
 import Search from './components/Search';
 import UnitToggle from './components/UnitToggle';
-import WeatherDetails from './components/WeatherDetails';
 import useRecentCities, { isSamePlace } from './hooks/useRecentCities';
 import useWeather from './hooks/useWeather';
 import getScene, { DEFAULT_SCENE } from './utils/getScene';
@@ -34,31 +32,6 @@ const App = () => {
         (place) => !(data && geo && isSamePlace(place, geo)),
     );
 
-    let hero;
-    if (data) {
-        hero = <CurrentConditions data={data} geo={geo} />;
-    } else if (loading) {
-        hero = (
-            <output aria-label="Loading weather" className="sk-chase">
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div className="sk-chase-dot" key={i} />
-                ))}
-            </output>
-        );
-    } else if (candidates.length > 0) {
-        hero = (
-            <p className="max-w-md text-2xl text-white">
-                Choose a place from the list to see its weather.
-            </p>
-        );
-    } else {
-        hero = (
-            <p className="max-w-lg text-3xl leading-snug font-light text-white">
-                {error ?? 'Search for a city to see its weather.'}
-            </p>
-        );
-    }
-
     return (
         <div
             className="min-h-svh text-white lg:h-svh"
@@ -77,13 +50,13 @@ const App = () => {
                     <Header>
                         <UnitToggle onChange={setUnit} unit={unit} />
                     </Header>
-                    <div
-                        className={`transition-opacity duration-300 ${
-                            loading && data ? 'opacity-60' : ''
-                        }`}
-                    >
-                        {hero}
-                    </div>
+                    <Hero
+                        candidates={candidates}
+                        data={data}
+                        error={error}
+                        geo={geo}
+                        loading={loading}
+                    />
                 </section>
 
                 <aside
@@ -113,27 +86,7 @@ const App = () => {
                         />
                     )}
 
-                    {data && (
-                        <div
-                            className={`flex flex-col gap-8 transition-opacity duration-300 ${
-                                loading ? 'opacity-60' : ''
-                            }`}
-                        >
-                            {data.hourly.length > 0 && (
-                                <HourlyForecast
-                                    current={data.current}
-                                    hours={data.hourly}
-                                />
-                            )}
-                            {data.daily.length > 0 && (
-                                <DailyForecast
-                                    current={data.current}
-                                    days={data.daily}
-                                />
-                            )}
-                            <WeatherDetails data={data} unit={unit} />
-                        </div>
-                    )}
+                    <ForecastPanel data={data} loading={loading} unit={unit} />
 
                     <footer className="mt-auto pt-4 text-xs text-white/55">
                         Weather data from OpenWeather. Photo: {scene.credit},
