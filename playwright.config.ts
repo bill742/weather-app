@@ -10,11 +10,15 @@ Object.assign(process.env, loadEnv('test', process.cwd(), 'VITE_'));
 // E2E config. The app reads its API URLs from env vars, so we boot Vite in
 // `test` mode (loads .env.test with placeholder hosts) and mock every network
 // call in the specs — no real OpenWeatherMap key or connectivity required.
-// (Object keys are alphabetised to satisfy the repo's sort-keys lint rule.)
+// (Object keys are alphabetized to satisfy the repo's sort-keys lint rule.)
 export default defineConfig({
     forbidOnly: !!process.env.CI,
     fullyParallel: true,
-    projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+    projects: [
+        { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+        { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+        { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+    ],
     reporter: [['html', { open: 'never' }], ['list']],
     retries: process.env.CI ? 2 : 0,
     testDir: './e2e',

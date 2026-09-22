@@ -1,12 +1,15 @@
-const Header = () => (
-    <header className="mb-6 text-center">
-        <h1 className="mb-1 text-4xl font-bold text-white drop-shadow-md">
+import type { ReactNode } from 'react';
+
+interface Props {
+    children?: ReactNode;
+}
+
+const Header = ({ children }: Props) => (
+    <header className="flex items-center justify-between gap-4">
+        <h1 className="text-lg font-semibold tracking-tight text-white">
             City Weather
         </h1>
-        <p className="text-sm text-white/75">
-            See your local weather conditions or search for the forecast in
-            cities around the world
-        </p>
+        {children}
     </header>
 );
 
