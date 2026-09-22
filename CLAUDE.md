@@ -27,4 +27,4 @@ Tailwind CSS v4 (configured via `@tailwindcss/vite` plugin, no config file). OWF
 
 ## Linting conventions
 
-ESLint enforces sorted imports (`eslint-plugin-simple-import-sort`), sorted destructure keys, and sorted object keys. Run `pnpm lint` before committing.
+ESLint v10 (flat config in `eslint.config.js`) enforces sorted imports/exports (`eslint-plugin-simple-import-sort`) and sorted object and destructure keys (`perfectionist/sort-objects`, case-sensitive alphabetical). Run `pnpm lint` before committing.
